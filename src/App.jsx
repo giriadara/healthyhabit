@@ -12,9 +12,9 @@ const IMG_URL = {
 };
 
 const PRODUCTS = [
-  { sku: "BASIC", name: "Signature Fruit Bowl", desc: "Seasonal fruits, premium pomegranate, pineapple & melon mix.", price: 249, image: IMG_URL.bowl1, badges: ["Best Seller","Vegan"] },
-  { sku: "PROTEIN", name: "Protein+ Bowl", desc: "Fruit medley with boiled eggs & almonds for extra protein.", price: 299, image: IMG_URL.bowl2, badges: ["High Protein"] },
-  { sku: "KIDS", name: "Kids Mini Bowl", desc: "Kid‑friendly cuts, bite‑size pieces, zero added sugar.", price: 189, image: IMG_URL.bowl3, badges: ["Kids Favorite"] },
+  { sku: "BASIC", name: "Signature Fruit Monthly Bowl", desc: "Seasonal fruits, premium pomegranate, pineapple & melon mix.", price: 2249, image: IMG_URL.bowl1, badges: ["Best Seller","Vegan"] },
+  { sku: "PROTEIN", name: "Protein+ Bowl Monthly", desc: "Fruit medley with boiled eggs & almonds for extra protein.", price: 2299, image: IMG_URL.bowl2, badges: ["High Protein"] },
+  { sku: "KIDS", name: "Kids Mini Bowl Monthly", desc: "Kid‑friendly cuts, bite‑size pieces, zero added sugar.", price: 1189, image: IMG_URL.bowl3, badges: ["Kids Favorite"] },
 ];
 
 const loadRzp = () =>
