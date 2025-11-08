@@ -16,7 +16,7 @@ const PRODUCTS = [
     sku: "BASIC",
     name: "Signature Fruit Monthly Bowl",
     desc: "Seasonal fruits, premium pomegranate, pineapple & melon mix.",
-    price: 2249,
+    price: 100,
     image: IMG_URL.bowl1,
     badges: ["Best Seller", "Vegan"],
   },
