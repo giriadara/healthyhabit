@@ -179,6 +179,183 @@ export default function HealthyHabitSite() {
         </div>
       </section>
 
+      <section id="why-us" className="bg-white/60 border-y border-emerald-100">
+        <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
+          {[
+            { t: "Squeaky clean", d: "RO-washed, food-grade gloves, sealed boxes." },
+            { t: "Always fresh", d: "We prep close to delivery time to keep it crisp." },
+            { t: "Flexible plans", d: "Book once, schedule daily, or choose monthly box." },
+          ].map((f) => (
+            <div key={f.t} className="rounded-3xl bg-white p-6 shadow">
+              <p className="text-2xl">🥝</p>
+              <h3 className="mt-2 text-xl font-semibold text-emerald-800">{f.t}</h3>
+              <p className="text-slate-600 text-sm">{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="pricing" className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-emerald-800">Simple pricing</h2>
+        <p className="text-slate-600 mt-1">Bulk/office/party orders available on request.</p>
+        <div className="mt-6 grid md:grid-cols-3 gap-6">
+          {[...PRODUCTS].map((p, i) => (
+            <div key={p.sku} className={`rounded-3xl p-6 shadow bg-white ${i === 1 ? "ring-2 ring-emerald-500" : ""}`}>
+              <h3 className="text-xl font-semibold text-emerald-800">{p.name}</h3>
+              <p className="text-sm text-slate-600">{p.desc}</p>
+              <p className="mt-4 text-3xl font-extrabold">
+                ₹{p.price}<span className="text-sm font-medium text-slate-500"> / bowl</span>
+              </p>
+              <ul className="mt-4 text-sm text-slate-700 space-y-2 list-disc list-inside">
+                <li>Zero added sugar</li>
+                <li>Food-grade packaging</li>
+                <li>Same-day delivery window</li>
+              </ul>
+              <button
+                onClick={() => { setVariant(p.sku); setOpen(true); }}
+                className="mt-5 w-full px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+              >
+                Book {p.name}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="book" className="bg-emerald-50/60 border-t border-emerald-100">
+        <div className="max-w-3xl mx-auto px-4 py-12">
+          <h2 className="text-3xl font-bold text-emerald-800">Book your fruit bowl</h2>
+          <p className="text-slate-600 mt-1">We’ll confirm on WhatsApp within minutes.</p>
+
+          <div className="mt-6 rounded-3xl bg-white shadow p-6 grid md:grid-cols-2 gap-5">
+            <div className="space-y-4">
+              <label className="block">
+                <span className="text-sm font-medium">Your name</span>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  placeholder="e.g., Priya"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium">Choose a bowl</span>
+                <select
+                  value={variant}
+                  onChange={(e) => setVariant(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:ring-2 focus:ring-emerald-500"
+                >
+                  {PRODUCTS.map((p) => (
+                    <option value={p.sku} key={p.sku}>
+                      {p.name} — ₹{p.price}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium">Quantity</span>
+                <input
+                  type="number"
+                  min={1}
+                  value={qty}
+                  onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium">Delivery date</span>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium">Preferred time</span>
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+              </label>
+            </div>
+
+            <div className="space-y-4">
+              <label className="block">
+                <span className="text-sm font-medium">Delivery address (or write “pickup”)</span>
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  rows={4}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="Flat / Street / Landmark"
+                />
+              </label>
+
+              <label className="block">
+                <span className="text-sm font-medium">Notes</span>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={3}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="Allergies, no pineapple, extra pomegranate, etc."
+                />
+              </label>
+
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-emerald-800">Total</p>
+                  <p className="text-xl font-bold">₹{total}</p>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Taxes included. Cash/UPI on delivery available.</p>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-3">
+                <a
+                  href={whatsappLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  WhatsApp
+                </a>
+                <a
+                  href={`mailto:orders@healthyhabit.example?subject=Fruit%20Bowl%20Booking&body=${encodeURIComponent(
+                    `Name: ${name}\nVariant: ${selectedProduct.name}\nQty: ${qty}\nDate: ${date} ${time}\nAddress: ${address}\nNotes: ${notes}`
+                  )}`}
+                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                >
+                  Email
+                </a>
+                <button
+                  onClick={() =>
+                    payOnline({
+                      name,
+                      phone: "", // add phone/email inputs later if needed
+                      email: "",
+                      amountInRupees: total,
+                      lineItem: `${selectedProduct.name}`,
+                      qty,
+                      extraNotes: notes,
+                    })
+                  }
+                  className="px-4 py-3 rounded-2xl bg-black text-white"
+                >
+                  Pay Online
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="max-w-6xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-emerald-800">How it works</h2>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
