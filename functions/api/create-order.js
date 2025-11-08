@@ -6,10 +6,7 @@ export async function onRequestPost({ request, env }) {
     const amount = Number(body.amount);
 
     if (!amount || amount < 100) {
-      return new Response(JSON.stringify({ error: "Amount must be in paise (>=100)." }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return json({ ok: false, error: "Amount must be in paise (>=100)." }, 400);
     }
 
     const payload = {
@@ -19,26 +16,31 @@ export async function onRequestPost({ request, env }) {
       notes: body.notes || {}
     };
 
-    const auth = btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
+    // Basic auth with your API keys from Cloudflare env
+    const auth = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
 
     const res = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${auth}`
+        "Authorization": auth
       },
       body: JSON.stringify(payload)
     });
 
     const data = await res.json();
-    return new Response(JSON.stringify(data), {
-      status: res.status,
-      headers: { "Content-Type": "application/json" }
-    });
+
+    // Pass Razorpay error details through to the client for easy debugging
+    return json({ status: res.status, data }, res.status);
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Invalid request", detail: String(err) }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" }
-    });
+    return json({ ok: false, error: "Invalid request", detail: String(err) }, 400);
   }
+}
+
+// small helper
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json" }
+  });
 }
