@@ -1,31 +1,45 @@
 // Cloudflare Pages Function: POST /api/create-order
-export async function onRequestPost(context) {
-  const { request, env } = context;
+// functions/api/create-order.js
+// Cloudflare Pages Function: POST /api/create-order
+export async function onRequestPost({ request, env }) {
+  try {
+    const body = await request.json(); // { amount, currency, receipt, notes }
+    const amount = Number(body.amount);
 
-  const { amount, currency = "INR", receipt = "hh_receipt", notes = {} } =
-    await request.json();
+    if (!amount || amount < 100) {
+      return new Response(JSON.stringify({ error: "Amount must be in paise (>=100)." }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-  if (!amount || amount < 100) {
-    return new Response(JSON.stringify({ error: "Invalid amount (paise)" }), { status: 400 });
+    const payload = {
+      amount,                                 // paise (₹299 => 29900)
+      currency: body.currency || "INR",
+      receipt: body.receipt || `rcpt_${Date.now()}`,
+      notes: body.notes || {}
+    };
+
+    const auth = btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
+
+    const res = await fetch("https://api.razorpay.com/v1/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${auth}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      status: res.status,
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Invalid request", detail: String(err) }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" }
+    });
   }
-
-  const keyId = env.RAZORPAY_KEY_ID;
-  const keySecret = env.RAZORPAY_KEY_SECRET;
-  if (!keyId || !keySecret) {
-    return new Response(JSON.stringify({ error: "Razorpay keys not configured" }), { status: 500 });
-  }
-
-  const auth = btoa(`${keyId}:${keySecret}`);
-
-  const res = await fetch("https://api.razorpay.com/v1/orders", {
-    method: "POST",
-    headers: {
-      "Authorization": `Basic ${auth}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ amount, currency, receipt, notes }),
-  });
-
-  const data = await res.json();
-  return new Response(JSON.stringify(data), { status: res.ok ? 200 : res.status });
 }

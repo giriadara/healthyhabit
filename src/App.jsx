@@ -26,6 +26,46 @@ const loadRzp = () =>
     s.onerror = reject;
     document.body.appendChild(s);
   });
+async function payOnline({ name, phone, email, amountInRupees }) {
+  // 1) Ask our serverless function to create an order
+  const res = await fetch("/api/create-order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount: Math.round(amountInRupees * 100),  // rupees -> paise
+      currency: "INR",
+      notes: { name, phone, email }
+    })
+  });
+
+  const order = await res.json();
+  if (!order || !order.id) {
+    alert("Could not create order. Please try again.");
+    console.log(order);
+    return;
+  }
+
+  // 2) Open Razorpay Checkout
+  const options = {
+    key: import.meta.env.VITE_RAZORPAY_KEY_ID,   // public key from env
+    amount: order.amount,                        // paise
+    currency: order.currency,
+    name: "Healthy Habit",
+    description: "Fruit Bowl Order",
+    order_id: order.id,
+    prefill: { name: name || "", email: email || "", contact: phone || "" },
+    theme: { color: "#059669" },
+    handler: function (response) {
+      // Payment success (client-side)
+      alert("Payment successful! ID: " + response.razorpay_payment_id);
+      // TODO (recommended later): call a webhook or a verify endpoint
+    },
+    modal: { ondismiss: () => console.log("Checkout closed") }
+  };
+
+  const rzp = new window.Razorpay(options);
+  rzp.open();
+}
 
 export default function HealthyHabitSite() {
   useEffect(() => {
@@ -94,6 +134,18 @@ export default function HealthyHabitSite() {
     });
     rzp.open();
   };
+
+  <button
+  onClick={() => payOnline({
+    name: "Guest",
+    phone: "9000000000",
+    amountInRupees: 299   // <- change per item
+  })}
+  className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+>
+  Pay ₹299 Online
+</button>
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800">
