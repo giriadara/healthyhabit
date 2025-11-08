@@ -20,7 +20,7 @@ export async function onRequestPost({ request, env }) {
       notes: body.notes || {}
     };
 
-    const auth = btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
+    const auth = btoa(`${env.rzp_test_Rd9XymdkvcSofu}:${env.Le1M4xi4vHknymMbUkETtWEz}`);
 
     const res = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
