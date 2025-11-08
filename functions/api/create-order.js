@@ -1,46 +1,62 @@
-// functions/api/create-order.js
 // Cloudflare Pages Function: POST /api/create-order
 export async function onRequestPost({ request, env }) {
   try {
-    const body = await request.json(); // { amount, currency, receipt, notes }
-    const amount = Number(body.amount);
-
-    if (!amount || amount < 100) {
-      return json({ ok: false, error: "Amount must be in paise (>=100)." }, 400);
+    // 1) Validate env
+    const kid = env.RAZORPAY_KEY_ID;
+    const ksec = env.RAZORPAY_KEY_SECRET;
+    if (!kid || !ksec) {
+      return new Response(
+        JSON.stringify({ error: "Missing Razorpay keys on server." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
     }
 
+    // 2) Read body
+    const { amount, currency = "INR", receipt, notes } = await request.json();
+    const amt = Number(amount);
+    if (!amt || amt < 100) {
+      return new Response(
+        JSON.stringify({ error: "Amount must be in paise (>=100)" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // 3) Call Razorpay Orders API
     const payload = {
-      amount, // paise (₹299 => 29900)
-      currency: body.currency || "INR",
-      receipt: body.receipt || `rcpt_${Date.now()}`,
-      notes: body.notes || {}
+      amount: Math.round(amt),
+      currency,
+      receipt: receipt || `rcpt_${Date.now()}`,
+      notes: notes || {},
     };
 
-    // Basic auth with your API keys from Cloudflare env
-    const auth = "Basic " + btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
-
-    const res = await fetch("https://api.razorpay.com/v1/orders", {
+    const auth = btoa(`${kid}:${ksec}`);
+    const rp = await fetch("https://api.razorpay.com/v1/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": auth
+        Authorization: `Basic ${auth}`,
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-
-    // Pass Razorpay error details through to the client for easy debugging
-    return json({ status: res.status, data }, res.status);
+    const data = await rp.json();
+    // Pass Razorpay’s response back to the browser
+    return new Response(JSON.stringify(data), {
+      status: rp.status,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
-    return json({ ok: false, error: "Invalid request", detail: String(err) }, 400);
+    return new Response(
+      JSON.stringify({ error: "Invalid request", detail: String(err) }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
   }
 }
 
-// small helper
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "Content-Type": "application/json" }
-  });
+// Optional: make GET return a helpful message instead of 404
+export async function onRequestGet() {
+  return new Response(
+    "Use POST /api/create-order with JSON {amount,currency,receipt,notes}",
+    { status: 405 }
+  );
 }
