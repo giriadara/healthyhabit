@@ -467,7 +467,7 @@ export default function HealthyHabitSite() {
                 9000925013
               </a>
             </p>
-            <p className="mt-1">Email: orders@healthyhabit.example</p>
+            <p className="mt-1">Email: yadhi1234@gmail.com</p>
           </div>
         </div>
         <p className="text-xs text-slate-500 mt-6">© {new Date().getFullYear()} Healthy Habit. All rights reserved.</p>
