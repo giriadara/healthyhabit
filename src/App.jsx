@@ -22,7 +22,7 @@ const IMG_URL = {
 // -------- PRICING (edit here) --------
 const PRODUCTS = [
   // Update price or text here any time
-  { sku: "BASIC",   name: "Signature Fruit Monthly Bowl", desc: "Seasonal fruits, premium pomegranate, pineapple & melon mix.", price: 2249, image: IMG_URL.bowl1, badges: ["Best Seller","Vegan"] },
+  { sku: "BASIC",   name: "Signature Fruit Monthly Bowl", desc: "Seasonal fruits, premium pomegranate, pineapple & mixed fruit mix.", price: 2249, image: IMG_URL.bowl1, badges: ["Best Seller","Vegan"] },
   { sku: "PROTEIN", name: "Protein+ Bowl Monthly",        desc: "Fruit medley with boiled eggs & almonds for extra protein.",  price: 2299, image: IMG_URL.bowl2, badges: ["High Protein"] },
   { sku: "KIDS",    name: "Kids Mini Bowl Monthly",       desc: "Kid-friendly cuts, bite-size pieces, zero added sugar.",       price: 1189, image: IMG_URL.bowl3, badges: ["Kids Favorite"] },
 ];
@@ -496,7 +496,7 @@ export default function HealthyHabitSite() {
           </div>
           <div className="text-sm text-slate-600">
             <p>Order / WhatsApp: <a className="text-emerald-700 font-semibold" href={`https://wa.me/${BUSINESS.whatsappOwner}`} target="_blank" rel="noreferrer">{BUSINESS.whatsappOwner}</a></p>
-            <p className="mt-1">Email: orders@healthyhabit.example</p>
+            <p className="mt-1">Email: yadhi1234@gmail.com</p>
             <p className="mt-1">Serving: {BUSINESS.serviceCity}{BUSINESS.allowedPincodes.length ? ` (${BUSINESS.allowedPincodes.join(", ")})` : ""}</p>
           </div>
         </div>
@@ -504,4 +504,3 @@ export default function HealthyHabitSite() {
       </footer>
     </div>
   );
-}
