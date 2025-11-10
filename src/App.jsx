@@ -284,13 +284,12 @@ export default function HealthyHabitSite() {
         </div>
         <div className="relative">
           <img src={IMG_URL.hero} alt="Monthly Fruit Box" className="w-full rounded-3xl shadow-xl"/>
-          <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow p-3 hidden md:flex gap-3 items-center">
+          
             <img src={IMG_URL.bowl1} alt="Signature" className="h-14 w-14 rounded-xl object-cover"/>
             <div>
               <p className="text-sm font-semibold">Signature Fruit Bowl</p>
               <p className="text-xs text-slate-500">from ₹{PRODUCTS[0].price}</p>
             </div>
-          </div>
         </div>
       </section>
 
