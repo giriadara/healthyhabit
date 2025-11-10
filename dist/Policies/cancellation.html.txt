@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Cancellation & Refunds – Healthy Habit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 16px;line-height:1.6}h1{font-size:28px}h2{font-size:20px;margin-top:28px}</style>
+</head>
+<body>
+  <h1>Cancellation & Refunds</h1>
+  <p><b>Healthy Habit</b> (“we”, “our”, “us”) prepares fresh fruit bowls to order.</p>
+
+  <h2>Order cancellation</h2>
+  <ul>
+    <li>Same-day orders can be cancelled <b>within 10 minutes</b> of placing the order, provided preparation has not started.</li>
+    <li>Pre-orders (for future dates) can be cancelled up to <b>12 hours</b> before the delivery slot.</li>
+    <li>To cancel, contact us on <b>PHONE: +91 9000925013</b> or <b>EMAIL: SUPPORT@YOURDOMAIN.IN</b> with your order ID.</li>
+  </ul>
+
+  <h2>Refunds</h2>
+  <ul>
+    <li>Approved cancellations will be refunded to the original payment method within <b>5–7 business days</b>.</li>
+    <li>If an order is incorrect or not delivered, contact us within <b>24 hours</b> with photos (if applicable). We will offer a replacement or refund after review.</li>
+    <li>Partially consumed products are not eligible unless quality issues are proven.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>Legal name: <b>YOUR LEGAL BUSINESS NAME</b><br>
+     Address: <b>YOUR FULL ADDRESS, CITY, STATE, PIN</b><br>
+     Phone: <b>+91 9000925013</b> · Email: <b>support@yourdomain.in</b></p>
+</body>
+</html>

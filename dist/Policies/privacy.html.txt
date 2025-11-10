@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Privacy Policy – Healthy Habit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 16px;line-height:1.6}h1{font-size:28px}h2{font-size:20px;margin-top:28px}</style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p>We respect your privacy. This policy describes how we collect and use information.</p>
+
+  <h2>Information we collect</h2>
+  <ul>
+    <li>Contact details (name, phone, email, address) for order fulfilment.</li>
+    <li>Payment details are processed by <b>Razorpay</b>; we do not store card/UPI data.</li>
+    <li>Basic analytics/cookies to improve our service.</li>
+  </ul>
+
+  <h2>Use of information</h2>
+  <p>To process orders, schedule delivery, provide support, and send order updates. We do not sell your data.</p>
+
+  <h2>Data retention & rights</h2>
+  <p>We retain order records as required by law. To update or delete your data, email <b>support@yourdomain.in</b>.</p>
+
+  <h2>Contact & Grievance Officer</h2>
+  <p>Name: <b>GRIEVANCE OFFICER NAME</b><br>
+     Email: <b>support@yourdomain.in</b><br>
+     Address: <b>YOUR FULL ADDRESS</b></p>
+
+  <p>Effective date: <b>DD MMM YYYY</b></p>
+</body>
+</html>

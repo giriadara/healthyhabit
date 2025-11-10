@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Terms & Conditions – Healthy Habit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 16px;line-height:1.6}h1{font-size:28px}h2{font-size:20px;margin-top:28px}</style>
+</head>
+<body>
+  <h1>Terms & Conditions</h1>
+  <p>Welcome to <b>Healthy Habit</b>. By placing an order on this website you agree to the following terms.</p>
+
+  <h2>Service</h2>
+  <ul>
+    <li>We operate in <b>CITY & PINCODES COVERED</b>. Delivery slots are shown at checkout.</li>
+    <li>Product photos are for illustration. Fruit selection may vary by season and availability.</li>
+  </ul>
+
+  <h2>Pricing & Payment</h2>
+  <ul>
+    <li>All prices are in INR and inclusive of applicable taxes.</li>
+    <li>Online payments are processed securely via <b>Razorpay</b>. We do not store card/UPI details.</li>
+  </ul>
+
+  <h2>Orders & Cancellations</h2>
+  <p>See our <a href="/policies/cancellation.html">Cancellation & Refunds Policy</a>.</p>
+
+  <h2>Allergens & Hygiene</h2>
+  <p>Products may contain traces of nuts or seeds. Inform us of allergies before ordering.</p>
+
+  <h2>Governing Law</h2>
+  <p>These terms are governed by the laws of India. Disputes subject to the jurisdiction of courts at <b>YOUR CITY</b>.</p>
+
+  <h2>Contact</h2>
+  <p>Legal name: <b>YOUR LEGAL BUSINESS NAME</b><br>Address: <b>YOUR FULL ADDRESS</b><br>Phone: <b>+91 9000925013</b> · Email: <b>support@yourdomain.in</b></p>
+</body>
+</html>

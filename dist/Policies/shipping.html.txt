@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Delivery Policy – Healthy Habit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>body{font-family:system-ui,Segoe UI,Arial,sans-serif;max-width:800px;margin:40px auto;padding:0 16px;line-height:1.6}h1{font-size:28px}h2{font-size:20px;margin-top:28px}</style>
+</head>
+<body>
+  <h1>Delivery Policy</h1>
+  <p>We freshly prepare and deliver fruit bowls within our service areas.</p>
+
+  <h2>Areas & Timings</h2>
+  <ul>
+    <li>Coverage: <b>LIST YOUR AREAS / PINCODES</b></li>
+    <li>Same-day delivery for orders placed before <b>CUTOFF TIME</b>; others delivered in the next slot.</li>
+    <li>Delivery fee (if any) is shown at checkout.</li>
+  </ul>
+
+  <h2>Order Tracking & Contact</h2>
+  <p>For delivery updates call <b>+91 9000925013</b> or WhatsApp <b>+91 9000925013</b>.</p>
+
+  <h2>Failed Delivery</h2>
+  <p>If the recipient is unavailable, we’ll attempt to contact you. Re-delivery may incur an additional fee.</p>
+</body>
+</html>
