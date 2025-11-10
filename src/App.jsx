@@ -16,7 +16,7 @@ const PRODUCTS = [
     sku: "BASIC",
     name: "Signature Fruit Monthly Bowl",
     desc: "Seasonal fruits, premium pomegranate, pineapple & melon mix.",
-    price: 100,
+    price: 1,
     image: IMG_URL.bowl1,
     badges: ["Best Seller", "Vegan"],
   },
@@ -60,8 +60,8 @@ async function payOnline({ name, phone, email, amountInRupees, lineItem, qty, ex
       return;
     }
 
-    const amountPaise = Math.round(Number(amountInRupees) * 100); // rupees -> paise
-    if (!amountPaise || amountPaise < 100) {
+    const amountPaise = Math.round(Number(amountInRupees) * 1); // rupees -> paise
+    if (!amountPaise || amountPaise < 1) {
       alert("Amount must be at least ₹1.");
       return;
     }
