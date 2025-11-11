@@ -1,13 +1,27 @@
 import React, { useMemo, useState, useEffect } from "react";
 
-/* ================== CONFIG ================== */
+/* =======================
+   BUSINESS CONFIG
+======================= */
 const BUSINESS = {
   name: "Healthy Habit",
-  whatsappOwner: "9000925013",     // WhatsApp (no +91)
-  serviceCity: "Hyderabad",        // served city
-  allowedPincodes: [],             // e.g. ["500001","500002"]; leave [] to allow all
+  whatsappOwner: "9000925013", // your WhatsApp number (10 digits, no +91)
+  serviceCity: "Hyderabad",
+  allowedPincodes: [], // e.g., ["500001","500002"]; keep [] to allow all
 };
 
+/* =======================
+   FSSAI CONFIG
+======================= */
+const FSSAI = {
+  number: "23625028002142",
+  validUpto: "19-05-2026",
+  city: "Hyderabad",
+};
+
+/* =======================
+   IMAGES
+======================= */
 const IMG_URL = {
   logo: "/images/bowl1.jpg",
   hero: "/images/hero.jpg",
@@ -19,14 +33,39 @@ const IMG_URL = {
   process3: "/images/bowl3.png",
 };
 
-/* ================== PRICING ================== */
+/* =======================
+   PRODUCTS / PRICING
+======================= */
 const PRODUCTS = [
-  { sku: "BASIC",   name: "Signature Fruit Monthly Bowl", desc: "Seasonal fruits, premium pomegranate, pineapple & mixed fruit mix.", price: 2249, image: IMG_URL.bowl1, badges: ["Best Seller","Vegan"] },
-  { sku: "PROTEIN", name: "Protein+ Bowl Monthly",        desc: "Fruit medley with boiled eggs & almonds for extra protein.",        price: 2299, image: IMG_URL.bowl2, badges: ["High Protein"] },
-  { sku: "KIDS",    name: "Kids Mini Bowl Monthly",       desc: "Kid-friendly cuts, bite-size pieces, zero added sugar.",            price: 1189, image: IMG_URL.bowl3, badges: ["Kids Favorite"] },
+  {
+    sku: "BASIC",
+    name: "Signature Fruit Monthly Bowl",
+    desc: "Seasonal fruits, premium pomegranate, pineapple & mixed fruit mix.",
+    price: 2249,
+    image: IMG_URL.bowl1,
+    badges: ["Best Seller", "Vegan"],
+  },
+  {
+    sku: "PROTEIN",
+    name: "Protein+ Bowl Monthly",
+    desc: "Fruit medley with boiled eggs & almonds for extra protein.",
+    price: 2299,
+    image: IMG_URL.bowl2,
+    badges: ["High Protein"],
+  },
+  {
+    sku: "KIDS",
+    name: "Kids Mini Bowl Monthly",
+    desc: "Kid-friendly cuts, bite-size pieces, zero added sugar.",
+    price: 1189,
+    image: IMG_URL.bowl3,
+    badges: ["Kids Favorite"],
+  },
 ];
 
-/* ============ RAZORPAY LOADER / KEY FETCH ============ */
+/* =======================
+   RAZORPAY LOADER + PUBLIC KEY
+======================= */
 const loadRzp = () =>
   new Promise((resolve, reject) => {
     if (window.Razorpay) return resolve();
@@ -37,7 +76,6 @@ const loadRzp = () =>
     document.body.appendChild(s);
   });
 
-// Works both locally and on Cloudflare (fallback to Pages Function)
 async function getPublicKey() {
   const inlineKey = import.meta.env?.VITE_RAZORPAY_KEY_ID;
   if (inlineKey) return inlineKey;
@@ -47,19 +85,53 @@ async function getPublicKey() {
   return key;
 }
 
-/* ================== HELPERS ================== */
+/* =======================
+   HELPERS
+======================= */
 const isTenDigitPhone = (p) => /^[6-9]\d{9}$/.test(String(p || "").trim());
-const isEmail        = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
-const onlyDigits     = (s) => String(s || "").replace(/\D/g, "");
+const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
+const onlyDigits = (s) => String(s || "").replace(/\D/g, "");
 function buildWaLink(phone, text) {
   const n = onlyDigits(phone);
   const dest = n.length === 10 ? `91${n}` : n;
   return `https://wa.me/${dest}?text=${encodeURIComponent(text)}`;
 }
 
-/* ================== MAIN COMPONENT ================== */
+/* =======================
+   FSSAI BADGE COMPONENT
+======================= */
+function FssaiBadge() {
+  return (
+    <div className="w-full rounded-2xl border border-emerald-200 bg-white/80 shadow-sm p-3 sm:p-4 flex items-center gap-3">
+      {/* Shield + tick */}
+      <svg viewBox="0 0 24 24" className="h-8 w-8 shrink-0 text-emerald-600">
+        <path fill="currentColor" d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"/>
+        <path fill="#fff" d="M10.5 13.2l-2-2 1.1-1.1l0.9 0.9l3.9-3.9l1.1 1.1z"/>
+      </svg>
+
+      <div className="flex-1">
+        <p className="text-sm font-semibold text-emerald-800 leading-tight">FSSAI Registered</p>
+        <p className="text-xs text-slate-600 leading-tight">
+          Licence No: <span className="font-medium tracking-wide">{FSSAI.number}</span>
+        </p>
+        <p className="text-[11px] text-slate-500">Valid up to {FSSAI.validUpto} · {FSSAI.city}</p>
+      </div>
+
+      {/* Minimal “fssai” wordmark */}
+      <svg viewBox="0 0 120 32" className="hidden sm:block h-6 w-auto">
+        <text x="0" y="22" fontFamily="serif" fontSize="22" fill="#1C6B34">fssai</text>
+        <path d="M72 6 C76 6, 78 6, 82 6" stroke="#ff7a00" strokeWidth="2" fill="none"/>
+        <circle cx="82" cy="6" r="2" fill="#ff7a00"/>
+      </svg>
+    </div>
+  );
+}
+
+/* =======================
+   MAIN PAGE
+======================= */
 export default function HealthyHabitSite() {
-  /* SEO */
+  // SEO
   useEffect(() => {
     document.title = `${BUSINESS.name} – Monthly Fruit Box & Fresh Fruit Bowls`;
     const meta = document.createElement("meta");
@@ -69,7 +141,7 @@ export default function HealthyHabitSite() {
     return () => document.head.removeChild(meta);
   }, []);
 
-  /* FORM STATE */
+  // form state
   const [variant, setVariant] = useState(PRODUCTS[0].sku);
   const [qty, setQty] = useState(1);
   const [name, setName] = useState("");
@@ -84,31 +156,24 @@ export default function HealthyHabitSite() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  /* PAYMENT CONFIRMATION */
-  const [receipt, setReceipt] = useState(null); // { orderId, paymentId, amount, ... }
+  const [receipt, setReceipt] = useState(null); // { orderId, paymentId, ... }
 
   const selectedProduct = useMemo(() => PRODUCTS.find(p => p.sku === variant), [variant]);
   const total = useMemo(() => qty * selectedProduct.price, [qty, selectedProduct]);
 
-  /* WhatsApp enquiry (optional) */
+  // enquiry link
   const enquiryLink = useMemo(() => {
-    const msg =
-      `Hi ${BUSINESS.name}!%0A%0AI'd like to book a Fruit Bowl order:%0A%0A` +
-      `Name: ${name}%0A` +
-      `Phone: ${phone}%0A` +
-      `Email: ${email}%0A` +
-      `Variant: ${selectedProduct.name}%0A` +
-      `Quantity: ${qty}%0A` +
+    const msg = `Hi ${BUSINESS.name}!%0A%0AI'd like to book a Fruit Bowl order:%0A%0A` +
+      `Name: ${name}%0APhone: ${phone}%0AEmail: ${email}%0A` +
+      `Variant: ${selectedProduct.name}%0AQuantity: ${qty}%0A` +
       `Preferred delivery: ${date} at ${time}%0A` +
-      `City: ${city}%0A` +
-      `Pincode: ${pincode}%0A` +
+      `City: ${city}%0APincode: ${pincode}%0A` +
       `Address: ${address || "pickup"}%0A` +
-      (notes ? `Notes: ${notes}%0A` : "") +
-      `%0A(Website enquiry)`;
+      (notes ? `Notes: ${notes}%0A` : "") + `%0A(Website enquiry)`;
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${msg}`;
   }, [name, phone, email, selectedProduct, qty, date, time, city, pincode, address, notes]);
 
-  /* VALIDATION */
+  // validation
   function validate() {
     const e = {};
     if (!name.trim()) e.name = "Name is required";
@@ -131,12 +196,13 @@ export default function HealthyHabitSite() {
     return Object.keys(e).length === 0;
   }
 
-  /* PAYMENT FLOW */
+  // payment
   async function handlePayOnline() {
     if (!validate()) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     try {
       setIsSubmitting(true);
       await loadRzp();
@@ -150,7 +216,10 @@ export default function HealthyHabitSite() {
           amount: amountPaise,
           currency: "INR",
           receipt: `HH_${Date.now()}`,
-          notes: { name, phone, email, city, pincode, address, variant: selectedProduct.name, qty, date, time, notes },
+          notes: {
+            name, phone, email, city, pincode, address,
+            variant: selectedProduct.name, qty, date, time, notes,
+          },
         }),
       });
 
@@ -178,7 +247,8 @@ export default function HealthyHabitSite() {
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
             amount: amountPaise / 100,
-            name, phone, email, city, pincode, address, variant: selectedProduct.name, qty, date, time, notes,
+            name, phone, email, city, pincode, address,
+            variant: selectedProduct.name, qty, date, time, notes,
           });
           setIsSubmitting(false);
         },
@@ -193,11 +263,11 @@ export default function HealthyHabitSite() {
     }
   }
 
-  /* CONFIRM LINKS */
+  // confirmation links
   const customerConfirmLink = useMemo(() => {
     if (!receipt) return "#";
     const text =
-      `Hi ${name}, your payment was successful!%0A%0A` +
+      `Hi ${receipt.name}, your payment was successful!%0A%0A` +
       `Order: ${receipt.orderId}%0A` +
       `Payment: ${receipt.paymentId}%0A` +
       `Item: ${receipt.variant} x ${receipt.qty}%0A` +
@@ -205,8 +275,8 @@ export default function HealthyHabitSite() {
       `Address: ${receipt.address || "pickup"}%0A` +
       `Total: ₹${receipt.amount}%0A%0A` +
       `Thank you for choosing ${BUSINESS.name} 🍉`;
-    return buildWaLink(phone, text);
-  }, [receipt, name, phone]);
+    return buildWaLink(receipt.phone, text);
+  }, [receipt]);
 
   const ownerAlertLink = useMemo(() => {
     if (!receipt) return "#";
@@ -225,17 +295,15 @@ export default function HealthyHabitSite() {
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${text}`;
   }, [receipt]);
 
-  const Error = ({ id }) =>
-    errors[id] ? <p className="text-xs text-red-600 mt-1">{errors[id]}</p> : null;
+  const Error = ({ id }) => errors[id] ? <p className="text-xs text-red-600 mt-1">{errors[id]}</p> : null;
 
-  /* ================== UI ================== */
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800">
       {/* Header */}
       <header className="backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/50 sticky top-0 z-50 border-b border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow" />
+            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow"/>
             <div className="leading-tight">
               <p className="font-semibold text-emerald-700 text-lg">{BUSINESS.name}</p>
               <p className="text-xs text-emerald-600">One Box • Many Benefits</p>
@@ -252,9 +320,17 @@ export default function HealthyHabitSite() {
             <a href={`https://wa.me/${BUSINESS.whatsappOwner}`} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50">WhatsApp</a>
           </div>
         </div>
-        <div className="bg-emerald-700 text-white text-center text-sm py-1">
-          Now serving <b>{BUSINESS.serviceCity}</b>
-          {BUSINESS.allowedPincodes.length ? ` (Pincodes: ${BUSINESS.allowedPincodes.join(", ")})` : ""}. Other areas coming soon!
+        {/* City + FSSAI badge bar */}
+        <div className="bg-emerald-700/90 text-white">
+          <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-4">
+            <span className="text-sm">
+              Now serving <b>{BUSINESS.serviceCity}</b>
+              {BUSINESS.allowedPincodes.length ? ` (Pincodes: ${BUSINESS.allowedPincodes.join(", ")})` : ""}. Other areas coming soon!
+            </span>
+            <div className="ml-auto hidden md:block w-[360px]">
+              <FssaiBadge />
+            </div>
+          </div>
         </div>
       </header>
 
@@ -272,6 +348,10 @@ export default function HealthyHabitSite() {
             <a href="#book" className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700">Book your bowl</a>
             <a href="#menu" className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50">View menu</a>
           </div>
+          {/* FSSAI badge (hero) */}
+          <div className="mt-6 max-w-md">
+            <FssaiBadge />
+          </div>
           <div className="mt-6 flex items-center gap-4 text-sm text-slate-500">
             <span className="inline-flex items-center gap-2">🍊 Seasonal</span>
             <span className="inline-flex items-center gap-2">🥗 Clean & hygienic</span>
@@ -279,8 +359,14 @@ export default function HealthyHabitSite() {
           </div>
         </div>
         <div className="relative">
-          <img src={IMG_URL.hero} alt="Monthly Fruit Box" className="w-full rounded-3xl shadow-xl" />
-          {/* Overlay chip removed intentionally */}
+          <img src={IMG_URL.hero} alt="Monthly Fruit Box" className="w-full rounded-3xl shadow-xl"/>
+          <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow p-3 hidden md:flex gap-3 items-center">
+            <img src={IMG_URL.bowl1} alt="Signature" className="h-14 w-14 rounded-xl object-cover"/>
+            <div>
+              <p className="text-sm font-semibold">Signature Fruit Bowl</p>
+              <p className="text-xs text-slate-500">from ₹{PRODUCTS[0].price}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -293,7 +379,7 @@ export default function HealthyHabitSite() {
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {PRODUCTS.map((p) => (
             <article key={p.sku} className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col">
-              <img src={p.image} alt={p.name} className="rounded-2xl h-52 w-full object-cover" />
+              <img src={p.image} alt={p.name} className="rounded-2xl h-52 w-full object-cover"/>
               <div className="mt-3 flex gap-2 flex-wrap">
                 {p.badges.map((b) => (
                   <span key={b} className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full">{b}</span>
@@ -316,7 +402,7 @@ export default function HealthyHabitSite() {
         <p className="text-slate-600 mt-1">Bulk/office/party orders available on request.</p>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {[...PRODUCTS].map((p, i) => (
-            <div key={p.sku} className={`rounded-3xl p-6 shadow bg-white ${i === 1 ? "ring-2 ring-emerald-500" : ""}`}>
+            <div key={p.sku} className={`rounded-3xl p-6 shadow bg-white ${i===1?"ring-2 ring-emerald-500":""}`}>
               <h3 className="text-xl font-semibold text-emerald-800">{p.name}</h3>
               <p className="text-sm text-slate-600">{p.desc}</p>
               <p className="mt-4 text-3xl font-extrabold">
@@ -345,20 +431,20 @@ export default function HealthyHabitSite() {
             <div className="space-y-4">
               <label className="block">
                 <span className="text-sm font-medium">Your name *</span>
-                <input value={name} onChange={(e)=>setName(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="e.g., Priya" />
-                <Error id="name" />
+                <input value={name} onChange={(e)=>setName(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="e.g., Priya"/>
+                <Error id="name"/>
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Phone (10-digit) *</span>
-                <input value={phone} onChange={(e)=>setPhone(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="98XXXXXXXX" maxLength={10} />
-                <Error id="phone" />
+                <input value={phone} onChange={(e)=>setPhone(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="98XXXXXXXX" maxLength={10}/>
+                <Error id="phone"/>
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Email *</span>
-                <input value={email} onChange={(e)=>setEmail(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="you@example.com" />
-                <Error id="email" />
+                <input value={email} onChange={(e)=>setEmail(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="you@example.com"/>
+                <Error id="email"/>
               </label>
 
               <label className="block">
@@ -370,8 +456,8 @@ export default function HealthyHabitSite() {
 
               <label className="block">
                 <span className="text-sm font-medium">Quantity *</span>
-                <input type="number" min={1} value={qty} onChange={(e)=>setQty(Math.max(1, Number(e.target.value)))} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="qty" />
+                <input type="number" min={1} value={qty} onChange={(e)=>setQty(Math.max(1, Number(e.target.value)))} className="mt-1 w-full border rounded-xl px-3 py-2"/>
+                <Error id="qty"/>
               </label>
             </div>
 
@@ -379,37 +465,37 @@ export default function HealthyHabitSite() {
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
                   <span className="text-sm font-medium">City *</span>
-                  <input value={city} onChange={(e)=>setCity(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder={BUSINESS.serviceCity} />
-                  <Error id="city" />
+                  <input value={city} onChange={(e)=>setCity(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder={BUSINESS.serviceCity}/>
+                  <Error id="city"/>
                 </label>
                 <label className="block">
                   <span className="text-sm font-medium">Pincode *</span>
-                  <input value={pincode} onChange={(e)=>setPincode(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="6-digit" maxLength={6} />
-                  <Error id="pincode" />
+                  <input value={pincode} onChange={(e)=>setPincode(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="6-digit" maxLength={6}/>
+                  <Error id="pincode"/>
                 </label>
               </div>
 
               <label className="block">
                 <span className="text-sm font-medium">Delivery date *</span>
-                <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="date" />
+                <input type="date" value={date} onChange={(e)=>setDate(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2"/>
+                <Error id="date"/>
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Preferred time *</span>
-                <input type="time" value={time} onChange={(e)=>setTime(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="time" />
+                <input type="time" value={time} onChange={(e)=>setTime(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2"/>
+                <Error id="time"/>
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Delivery address (or write “pickup”)</span>
-                <textarea value={address} onChange={(e)=>setAddress(e.target.value)} rows={3} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Flat / Street / Landmark" />
-                <Error id="address" />
+                <textarea value={address} onChange={(e)=>setAddress(e.target.value)} rows={3} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Flat / Street / Landmark"/>
+                <Error id="address"/>
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Notes</span>
-                <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} rows={2} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Allergies, no pineapple, extra pomegranate, etc." />
+                <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} rows={2} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Allergies, no pineapple, extra pomegranate, etc."/>
               </label>
 
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
@@ -417,7 +503,9 @@ export default function HealthyHabitSite() {
                   <p className="font-semibold text-emerald-800">Total</p>
                   <p className="text-xl font-bold">₹{total}</p>
                 </div>
-                <p className="text-xs text-slate-500 mt-1">Taxes included. Cash/UPI on delivery available.</p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Payments are processed securely. FSSAI Licence No: {FSSAI.number}
+                </p>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-3">
@@ -478,7 +566,7 @@ export default function HealthyHabitSite() {
       <footer className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow" />
+            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow"/>
             <div>
               <p className="font-semibold text-emerald-700">{BUSINESS.name}</p>
               <p className="text-xs text-slate-500">Fresh • Healthy • Convenient</p>
@@ -490,6 +578,12 @@ export default function HealthyHabitSite() {
             <p className="mt-1">Serving: {BUSINESS.serviceCity}{BUSINESS.allowedPincodes.length ? ` (${BUSINESS.allowedPincodes.join(", ")})` : ""}</p>
           </div>
         </div>
+
+        {/* FSSAI badge in footer */}
+        <div className="mt-6 max-w-md">
+          <FssaiBadge />
+        </div>
+
         <p className="text-xs text-slate-500 mt-6">© {new Date().getFullYear()} {BUSINESS.name}. All rights reserved.</p>
       </footer>
     </div>
