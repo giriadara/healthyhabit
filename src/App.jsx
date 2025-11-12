@@ -15,7 +15,6 @@ const BUSINESS = {
 ======================= */
 const FSSAI = {
   number: "23625028002142",
-  validUpto: "19-05-2026",
   city: "Hyderabad",
 };
 
@@ -100,22 +99,35 @@ function buildWaLink(phone, text) {
 /* =======================
    FSSAI BADGE COMPONENT
 ======================= */
+/* =======================
+   FSSAI BADGE COMPONENT
+======================= */
 function FssaiBadge() {
   return (
-    <div className="w-full rounded-2xl border border-emerald-200 bg-white/80 shadow-sm p-3 sm:p-4 flex items-center gap-3">
-      {/* Shield + tick */}
-      <svg viewBox="0 0 24 24" className="h-8 w-8 shrink-0 text-emerald-600">
-        <path fill="currentColor" d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"/>
-        <path fill="#fff" d="M10.5 13.2l-2-2 1.1-1.1l0.9 0.9l3.9-3.9l1.1 1.1z"/>
-      </svg>
-
+    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3">
+      <img
+        src="/images/fssai-logo.png"
+        alt="FSSAI"
+        className="h-8 w-auto sm:h-9 object-contain"
+        loading="lazy"
+      />
       <div className="flex-1">
-        <p className="text-sm font-semibold text-emerald-800 leading-tight">FSSAI Registered</p>
+        <p className="text-sm font-semibold text-emerald-800 leading-tight">
+          FSSAI Licensed
+        </p>
         <p className="text-xs text-slate-600 leading-tight">
           Licence No: <span className="font-medium tracking-wide">{FSSAI.number}</span>
         </p>
-        <p className="text-[11px] text-slate-500">Valid up to {FSSAI.validUpto} · {FSSAI.city}</p>
       </div>
+      {/* trust tick */}
+      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0">
+        <path fill="currentColor" d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z" />
+        <path fill="#fff" d="M10.5 13.2l-2-2 1.1-1.1l0.9 0.9l3.9-3.9l1.1 1.1z" />
+      </svg>
+    </div>
+  );
+}
+
 
       {/* Minimal “fssai” wordmark */}
       <svg viewBox="0 0 120 32" className="hidden sm:block h-6 w-auto">
