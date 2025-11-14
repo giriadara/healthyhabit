@@ -5,9 +5,9 @@ import React, { useMemo, useState, useEffect } from "react";
 ======================= */
 const BUSINESS = {
   name: "Healthy Habit",
-  whatsappOwner: "9000925013", // your WhatsApp number (10 digits, no +91)
+  whatsappOwner: "9000925013", // 10 digits, no +91
   serviceCity: "Hyderabad",
-  allowedPincodes: [], // e.g., ["500001","500002"]; keep [] to allow all
+  allowedPincodes: [], // e.g. ["500001","500002"]; keep [] to allow all
 };
 
 /* =======================
@@ -15,7 +15,6 @@ const BUSINESS = {
 ======================= */
 const FSSAI = {
   number: "23625028002142",
-  city: "Hyderabad",
 };
 
 /* =======================
@@ -23,14 +22,26 @@ const FSSAI = {
 ======================= */
 const IMG_URL = {
   logo: "/images/bowl1.jpg",
-  hero: "/images/hero.jpg",
-  bowl1: "/images/bowl1.jpg",
+
+  // NEW colourful hero poster
+  hero: "/images/hero-colorful.png",
+
+  // MENU BOWLS
+  bowl1: "/images/bowl-monthly.png", // Monthly Fruit Box
   bowl2: "/images/bowl2.png",
   bowl3: "/images/bowl3.png",
-  process1: "/images/hero.jpg",
-  process2: "/images/bowl2.png",
-  process3: "/images/bowl3.png",
+
+  // FSSAI poster
+  fssai: "/images/fssai-big.png",
 };
+
+// Instagram-style gallery images
+const GALLERY_IMAGES = [
+  "/images/gallery1.jpg",
+  "/images/gallery2.jpg",
+  "/images/gallery3.jpg",
+  "/images/gallery4.jpg",
+];
 
 /* =======================
    PRODUCTS / PRICING
@@ -88,7 +99,8 @@ async function getPublicKey() {
    HELPERS
 ======================= */
 const isTenDigitPhone = (p) => /^[6-9]\d{9}$/.test(String(p || "").trim());
-const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
+const isEmail = (e) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
 const onlyDigits = (s) => String(s || "").replace(/\D/g, "");
 function buildWaLink(phone, text) {
   const n = onlyDigits(phone);
@@ -97,33 +109,48 @@ function buildWaLink(phone, text) {
 }
 
 /* =======================
-   FSSAI BADGE COMPONENT
+   FSSAI BADGE COMPONENT (with hover animation)
 ======================= */
 function FssaiBadge() {
   return (
-    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3">
+    <div className="rounded-2xl overflow-hidden border border-emerald-200 bg-white shadow-sm transition-transform duration-300 hover:shadow-xl hover:scale-[1.02]">
       <img
-        src="/images/fssai-logo.png"
-        alt="FSSAI"
-        className="h-8 w-auto sm:h-9 object-contain"
+        src={IMG_URL.fssai}
+        alt="FSSAI Licence"
+        className="w-full h-28 md:h-32 object-contain bg-gradient-to-r from-emerald-50 via-white to-orange-50"
         loading="lazy"
       />
-      <div className="flex-1">
-        <p className="text-sm font-semibold text-emerald-800 leading-tight">FSSAI Licensed</p>
-        <p className="text-xs text-slate-600 leading-tight">
-          Licence No: <span className="font-medium tracking-wide">{FSSAI.number}</span>
-        </p>
+    </div>
+  );
+}
+
+/* =======================
+   SMALL REUSABLE COMPONENTS
+======================= */
+function ErrorText({ id, errors }) {
+  return errors[id] ? (
+    <p className="text-xs text-red-600 mt-1">{errors[id]}</p>
+  ) : null;
+}
+
+function TestimonialCard({ name, role, quote }) {
+  return (
+    <div className="bg-white rounded-3xl shadow p-5 flex flex-col gap-3 border border-emerald-50">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-semibold">
+          {name[0]}
+        </div>
+        <div>
+          <p className="font-semibold text-emerald-800 text-sm">{name}</p>
+          <p className="text-[11px] text-slate-500">{role}</p>
+        </div>
       </div>
-      {/* trust shield */}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        className="h-6 w-6 text-emerald-600 shrink-0"
-        aria-hidden="true"
-      >
-        <path fill="currentColor" d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z" />
-        <path fill="#fff" d="M10.5 13.2l-2-2 1.1-1.1l0.9 0.9l3.9-3.9l1.1 1.1z" />
-      </svg>
+      <div className="flex items-center gap-1 text-amber-400 text-xs">
+        {"★★★★★".split("").map((s, i) => (
+          <span key={i}>★</span>
+        ))}
+      </div>
+      <p className="text-sm text-slate-600 leading-relaxed">“{quote}”</p>
     </div>
   );
 }
@@ -135,11 +162,6 @@ export default function HealthyHabitSite() {
   // SEO
   useEffect(() => {
     document.title = `${BUSINESS.name} – Monthly Fruit Box & Fresh Fruit Bowls`;
-    const meta = document.createElement("meta");
-    meta.name = "description";
-    meta.content = `Book fresh, beautifully curated fruit bowls delivered daily or on subscription. ${BUSINESS.name} – Fresh • Healthy • Convenient.`;
-    document.head.appendChild(meta);
-    return () => document.head.removeChild(meta);
   }, []);
 
   // form state
@@ -157,28 +179,51 @@ export default function HealthyHabitSite() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [receipt, setReceipt] = useState(null); // { orderId, paymentId, ... }
+  const [receipt, setReceipt] = useState(null);
 
-  const selectedProduct = useMemo(() => PRODUCTS.find(p => p.sku === variant), [variant]);
-  const total = useMemo(() => qty * selectedProduct.price, [qty, selectedProduct]);
+  const selectedProduct = useMemo(
+    () => PRODUCTS.find((p) => p.sku === variant),
+    [variant]
+  );
+  const total = useMemo(
+    () => qty * (selectedProduct ? selectedProduct.price : 0),
+    [qty, selectedProduct]
+  );
 
   // enquiry link
   const enquiryLink = useMemo(() => {
-    const msg = `Hi ${BUSINESS.name}!%0A%0AI'd like to book a Fruit Bowl order:%0A%0A` +
+    const msg =
+      `Hi ${BUSINESS.name}!%0A%0AI'd like to book a Fruit Bowl order:%0A%0A` +
       `Name: ${name}%0APhone: ${phone}%0AEmail: ${email}%0A` +
-      `Variant: ${selectedProduct.name}%0AQuantity: ${qty}%0A` +
+      `Variant: ${selectedProduct?.name}%0AQuantity: ${qty}%0A` +
       `Preferred delivery: ${date} at ${time}%0A` +
       `City: ${city}%0APincode: ${pincode}%0A` +
       `Address: ${address || "pickup"}%0A` +
-      (notes ? `Notes: ${notes}%0A` : "") + `%0A(Website enquiry)`;
+      (notes ? `Notes: ${notes}%0A` : "") +
+      `%0A(Website enquiry)`;
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${msg}`;
-  }, [name, phone, email, selectedProduct, qty, date, time, city, pincode, address, notes]);
+  }, [
+    name,
+    phone,
+    email,
+    selectedProduct,
+    qty,
+    date,
+    time,
+    city,
+    pincode,
+    address,
+    notes,
+  ]);
 
-  // validation
+  /* =======================
+     VALIDATION
+  ======================= */
   function validate() {
     const e = {};
     if (!name.trim()) e.name = "Name is required";
-    if (!isTenDigitPhone(phone)) e.phone = "Enter a valid 10-digit Indian mobile number";
+    if (!isTenDigitPhone(phone))
+      e.phone = "Enter a valid 10-digit Indian mobile number";
     if (!isEmail(email)) e.email = "Enter a valid email address";
     if (!date) e.date = "Choose a delivery date";
     if (!time) e.time = "Choose a delivery time";
@@ -189,15 +234,22 @@ export default function HealthyHabitSite() {
     }
     const pin = onlyDigits(pincode);
     if (pin.length !== 6) e.pincode = "Enter a 6-digit pincode";
-    if (BUSINESS.allowedPincodes.length > 0 && !BUSINESS.allowedPincodes.includes(pin)) {
+    if (
+      BUSINESS.allowedPincodes.length > 0 &&
+      !BUSINESS.allowedPincodes.includes(pin)
+    ) {
       e.pincode = `Pincode not in service area for ${BUSINESS.serviceCity}`;
     }
-    if (address && address.trim().length < 6) e.address = "Add more address details";
+    if (address && address.trim().length < 6)
+      e.address = "Add more address details";
+
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
-  // payment
+  /* =======================
+     PAYMENT FLOW
+  ======================= */
   async function handlePayOnline() {
     if (!validate()) {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -210,6 +262,7 @@ export default function HealthyHabitSite() {
       const key = await getPublicKey();
 
       const amountPaise = Math.round(Number(total) * 100);
+
       const orderRes = await fetch("/api/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -218,8 +271,17 @@ export default function HealthyHabitSite() {
           currency: "INR",
           receipt: `HH_${Date.now()}`,
           notes: {
-            name, phone, email, city, pincode, address,
-            variant: selectedProduct.name, qty, date, time, notes,
+            name,
+            phone,
+            email,
+            city,
+            pincode,
+            address,
+            variant: selectedProduct.name,
+            qty,
+            date,
+            time,
+            notes,
           },
         }),
       });
@@ -240,7 +302,16 @@ export default function HealthyHabitSite() {
         description: `${selectedProduct.name} x ${qty}`,
         order_id: order.id,
         prefill: { name, email, contact: phone },
-        notes: { city, pincode, address, variant: selectedProduct.name, qty, date, time, notes },
+        notes: {
+          city,
+          pincode,
+          address,
+          variant: selectedProduct.name,
+          qty,
+          date,
+          time,
+          notes,
+        },
         theme: { color: "#059669" },
         handler: (response) => {
           setReceipt({
@@ -248,8 +319,17 @@ export default function HealthyHabitSite() {
             paymentId: response.razorpay_payment_id,
             signature: response.razorpay_signature,
             amount: amountPaise / 100,
-            name, phone, email, city, pincode, address,
-            variant: selectedProduct.name, qty, date, time, notes,
+            name,
+            phone,
+            email,
+            city,
+            pincode,
+            address,
+            variant: selectedProduct.name,
+            qty,
+            date,
+            time,
+            notes,
           });
           setIsSubmitting(false);
         },
@@ -264,7 +344,9 @@ export default function HealthyHabitSite() {
     }
   }
 
-  // confirmation links
+  /* =======================
+     CONFIRMATION LINKS
+  ======================= */
   const customerConfirmLink = useMemo(() => {
     if (!receipt) return "#";
     const text =
@@ -296,161 +378,309 @@ export default function HealthyHabitSite() {
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${text}`;
   }, [receipt]);
 
-  const Error = ({ id }) => (errors[id] ? <p className="text-xs text-red-600 mt-1">{errors[id]}</p> : null);
+  /* =======================
+     RENDER
+  ======================= */
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800">
-      {/* Header */}
+      {/* HEADER */}
       <header className="backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/50 sticky top-0 z-50 border-b border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow" />
+            <img
+              src={IMG_URL.logo}
+              alt={BUSINESS.name}
+              className="h-10 w-10 rounded-full shadow"
+            />
             <div className="leading-tight">
-              <p className="font-semibold text-emerald-700 text-lg">{BUSINESS.name}</p>
+              <p className="font-semibold text-emerald-700 text-lg">
+                {BUSINESS.name}
+              </p>
               <p className="text-xs text-emerald-600">One Box • Many Benefits</p>
             </div>
           </div>
           <nav className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#menu" className="hover:text-emerald-700">Menu</a>
-            <a href="#why-us" className="hover:text-emerald-700">Why us</a>
-            <a href="#pricing" className="hover:text-emerald-700">Pricing</a>
-            <a href="#faq" className="hover:text-emerald-700">FAQ</a>
+            <a href="#menu" className="hover:text-emerald-700">
+              Menu
+            </a>
+            <a href="#why-us" className="hover:text-emerald-700">
+              Why us
+            </a>
+            <a href="#pricing" className="hover:text-emerald-700">
+              Pricing
+            </a>
+            <a href="#fssai" className="hover:text-emerald-700">
+              Food safety
+            </a>
+            <a href="#faq" className="hover:text-emerald-700">
+              FAQ
+            </a>
           </nav>
           <div className="flex gap-2">
-            <a href="#book" className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700">Book now</a>
-            <a href={`https://wa.me/${BUSINESS.whatsappOwner}`} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50">WhatsApp</a>
+            <a
+              href="#book"
+              className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              Book now
+            </a>
+            <a
+              href={`https://wa.me/${BUSINESS.whatsappOwner}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+            >
+              WhatsApp
+            </a>
           </div>
         </div>
-        {/* City + FSSAI badge bar */}
-        <div className="bg-emerald-700/90 text-white">
-          <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-4">
-            <span className="text-sm">
-              Now serving <b>{BUSINESS.serviceCity}</b>
-              {BUSINESS.allowedPincodes.length ? ` (Pincodes: ${BUSINESS.allowedPincodes.join(", ")})` : ""}. Other areas coming soon!
-            </span>
-            <div className="ml-auto hidden md:block w-[360px]">
-              <FssaiBadge />
-            </div>
-          </div>
+        <div className="bg-emerald-700/95 text-white text-center text-xs md:text-sm py-1">
+          Now serving <b>{BUSINESS.serviceCity}</b>. FSSAI Lic No:{" "}
+          <span className="font-semibold tracking-wide">{FSSAI.number}</span>
         </div>
       </header>
 
-      {/* Hero */}
-      <section className="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center" id="home">
+      {/* HERO SECTION */}
+      <section
+        className="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
+        id="home"
+      >
         <div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-emerald-800">
             Fresh Fruit Bowls, delivered with love
           </h1>
           <p className="mt-4 text-lg text-slate-600">
             Monthly Fruit Box • Daily bowls • Party platters. Zero added sugar,
-            hygienic prep, and same-day delivery. Start your <span className="font-semibold">{BUSINESS.name}</span> today.
+            hygienic prep, and same-day delivery. Start your{" "}
+            <span className="font-semibold">{BUSINESS.name}</span> today.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a href="#book" className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700">Book your bowl</a>
-            <a href="#menu" className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50">View menu</a>
+            <a
+              href="#book"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
+            >
+              Book your bowl
+            </a>
+            <a
+              href="#menu"
+              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+            >
+              View menu
+            </a>
           </div>
-          {/* FSSAI badge (hero) */}
-          <div className="mt-6 max-w-md">
+          <div className="mt-6 max-w-xs animate-[pulse_4s_ease-in-out_infinite]">
             <FssaiBadge />
           </div>
           <div className="mt-6 flex items-center gap-4 text-sm text-slate-500">
             <span className="inline-flex items-center gap-2">🍊 Seasonal</span>
-            <span className="inline-flex items-center gap-2">🥗 Clean & hygienic</span>
-            <span className="inline-flex items-center gap-2">🚚 Same-day delivery</span>
+            <span className="inline-flex items-center gap-2">
+              🧼 Clean & hygienic
+            </span>
+            <span className="inline-flex items-center gap-2">
+              🚚 Same-day delivery
+            </span>
           </div>
         </div>
         <div className="relative">
-          <img src={IMG_URL.hero} alt="Monthly Fruit Box" className="w-full rounded-3xl shadow-xl" />
-          <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow p-3 hidden md:flex gap-3 items-center">
-            <img src={IMG_URL.bowl1} alt="Signature" className="h-14 w-14 rounded-xl object-cover" />
-            <div>
-              <p className="text-sm font-semibold">Signature Fruit Bowl</p>
-              <p className="text-xs text-slate-500">from ₹{PRODUCTS[0].price}</p>
-            </div>
-          </div>
+          <img
+            src={IMG_URL.hero}
+            alt="Monthly Fruit Box"
+            className="w-full rounded-3xl shadow-xl"
+          />
         </div>
       </section>
 
-      {/* Menu */}
+      {/* MENU */}
       <section id="menu" className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-3xl font-bold text-emerald-800">Our Bowls</h2>
-          <a href="#book" className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700">Quick order</a>
+          <a
+            href="#book"
+            className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
+          >
+            Quick order
+          </a>
         </div>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {PRODUCTS.map((p) => (
-            <article key={p.sku} className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col">
-              <img src={p.image} alt={p.name} className="rounded-2xl h-52 w-full object-cover" />
+            <article
+              key={p.sku}
+              className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col border border-emerald-50"
+            >
+              <img
+                src={p.image}
+                alt={p.name}
+                className="rounded-2xl h-52 w-full object-cover"
+              />
               <div className="mt-3 flex gap-2 flex-wrap">
                 {p.badges.map((b) => (
-                  <span key={b} className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full">{b}</span>
+                  <span
+                    key={b}
+                    className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full"
+                  >
+                    {b}
+                  </span>
                 ))}
               </div>
-              <h3 className="mt-3 text-xl font-semibold text-emerald-800">{p.name}</h3>
+              <h3 className="mt-3 text-xl font-semibold text-emerald-800">
+                {p.name}
+              </h3>
               <p className="text-sm text-slate-600 flex-1">{p.desc}</p>
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-lg font-bold">₹{p.price}</p>
-                <a href="#book" className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700">Book</a>
+                <button
+                  onClick={() => {
+                    setVariant(p.sku);
+                    document
+                      .getElementById("book")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  Book
+                </button>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* WHY US */}
+      <section
+        id="why-us"
+        className="bg-white/60 border-y border-emerald-100 mt-4"
+      >
+        <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
+          {[
+            {
+              t: "Squeaky clean",
+              d: "RO-washed, food-grade gloves, sealed boxes & cold chain care.",
+            },
+            {
+              t: "Always fresh",
+              d: "We cut close to delivery time so fruit stays crisp & juicy.",
+            },
+            {
+              t: "Flexible plans",
+              d: "One-time orders, office snacks, or monthly subscriptions.",
+            },
+          ].map((f) => (
+            <div
+              key={f.t}
+              className="rounded-3xl bg-white p-6 shadow border border-emerald-50"
+            >
+              <p className="text-2xl">🥝</p>
+              <h3 className="mt-2 text-xl font-semibold text-emerald-800">
+                {f.t}
+              </h3>
+              <p className="text-slate-600 text-sm">{f.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-emerald-800">Simple pricing</h2>
-        <p className="text-slate-600 mt-1">Bulk/office/party orders available on request.</p>
+        <p className="text-slate-600 mt-1">
+          Bulk/office/party orders available on request.
+        </p>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {[...PRODUCTS].map((p, i) => (
-            <div key={p.sku} className={`rounded-3xl p-6 shadow bg-white ${i === 1 ? "ring-2 ring-emerald-500" : ""}`}>
-              <h3 className="text-xl font-semibold text-emerald-800">{p.name}</h3>
+            <div
+              key={p.sku}
+              className={`rounded-3xl p-6 shadow bg-white border border-emerald-50 ${
+                i === 1 ? "ring-2 ring-emerald-500" : ""
+              }`}
+            >
+              <h3 className="text-xl font-semibold text-emerald-800">
+                {p.name}
+              </h3>
               <p className="text-sm text-slate-600">{p.desc}</p>
               <p className="mt-4 text-3xl font-extrabold">
-                ₹{p.price}<span className="text-sm font-medium text-slate-500"> / bowl</span>
+                ₹{p.price}
+                <span className="text-sm font-medium text-slate-500">
+                  {" "}
+                  / bowl
+                </span>
               </p>
               <ul className="mt-4 text-sm text-slate-700 space-y-2 list-disc list-inside">
                 <li>Zero added sugar</li>
                 <li>Food-grade packaging</li>
                 <li>Same-day delivery window</li>
               </ul>
-              <a href="#book" className="mt-5 inline-block w-full text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700">
+              <button
+                onClick={() => {
+                  setVariant(p.sku);
+                  document
+                    .getElementById("book")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="mt-5 w-full px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+              >
                 Book {p.name}
-              </a>
+              </button>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Booking */}
-      <section id="book" className="bg-emerald-50/60 border-t border-emerald-100">
+      {/* BOOKING FORM */}
+      <section
+        id="book"
+        className="bg-emerald-50/60 border-t border-emerald-100"
+      >
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <h2 className="text-3xl font-bold text-emerald-800">Book your fruit bowl</h2>
-          <p className="text-slate-600 mt-1">We’ll confirm on WhatsApp within minutes.</p>
+          <h2 className="text-3xl font-bold text-emerald-800">
+            Book your fruit bowl
+          </h2>
+          <p className="text-slate-600 mt-1">
+            We’ll confirm on WhatsApp within minutes.
+          </p>
 
           <div className="mt-6 rounded-3xl bg-white shadow p-6 grid md:grid-cols-2 gap-5">
             <div className="space-y-4">
               <label className="block">
                 <span className="text-sm font-medium">Your name *</span>
-                <input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="e.g., Priya" />
-                <Error id="name" />
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="e.g., Priya"
+                />
+                <ErrorText id="name" errors={errors} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Phone (10-digit) *</span>
-                <input value={phone} onChange={(e) => setPhone(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="98XXXXXXXX" maxLength={10} />
-                <Error id="phone" />
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(onlyDigits(e.target.value))}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="98XXXXXXXX"
+                  maxLength={10}
+                />
+                <ErrorText id="phone" errors={errors} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Email *</span>
-                <input value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="you@example.com" />
-                <Error id="email" />
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="you@example.com"
+                />
+                <ErrorText id="email" errors={errors} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Choose a bowl *</span>
-                <select value={variant} onChange={(e) => setVariant(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2">
+                <select
+                  value={variant}
+                  onChange={(e) => setVariant(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                >
                   {PRODUCTS.map((p) => (
                     <option value={p.sku} key={p.sku}>
                       {p.name} — ₹{p.price}
@@ -461,8 +691,16 @@ export default function HealthyHabitSite() {
 
               <label className="block">
                 <span className="text-sm font-medium">Quantity *</span>
-                <input type="number" min={1} value={qty} onChange={(e) => setQty(Math.max(1, Number(e.target.value)))} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="qty" />
+                <input
+                  type="number"
+                  min={1}
+                  value={qty}
+                  onChange={(e) =>
+                    setQty(Math.max(1, Number(e.target.value) || 1))
+                  }
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+                <ErrorText id="qty" errors={errors} />
               </label>
             </div>
 
@@ -470,37 +708,72 @@ export default function HealthyHabitSite() {
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
                   <span className="text-sm font-medium">City *</span>
-                  <input value={city} onChange={(e) => setCity(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder={BUSINESS.serviceCity} />
-                  <Error id="city" />
+                  <input
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="mt-1 w-full border rounded-xl px-3 py-2"
+                    placeholder={BUSINESS.serviceCity}
+                  />
+                  <ErrorText id="city" errors={errors} />
                 </label>
                 <label className="block">
                   <span className="text-sm font-medium">Pincode *</span>
-                  <input value={pincode} onChange={(e) => setPincode(onlyDigits(e.target.value))} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="6-digit" maxLength={6} />
-                  <Error id="pincode" />
+                  <input
+                    value={pincode}
+                    onChange={(e) => setPincode(onlyDigits(e.target.value))}
+                    className="mt-1 w-full border rounded-xl px-3 py-2"
+                    placeholder="6-digit"
+                    maxLength={6}
+                  />
+                  <ErrorText id="pincode" errors={errors} />
                 </label>
               </div>
 
               <label className="block">
                 <span className="text-sm font-medium">Delivery date *</span>
-                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="date" />
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+                <ErrorText id="date" errors={errors} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Preferred time *</span>
-                <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="mt-1 w-full border rounded-xl px-3 py-2" />
-                <Error id="time" />
+                <input
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                />
+                <ErrorText id="time" errors={errors} />
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium">Delivery address (or write “pickup”)</span>
-                <textarea value={address} onChange={(e) => setAddress(e.target.value)} rows={3} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Flat / Street / Landmark" />
-                <Error id="address" />
+                <span className="text-sm font-medium">
+                  Delivery address (or write “pickup”)
+                </span>
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  rows={3}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="Flat / Street / Landmark"
+                />
+                <ErrorText id="address" errors={errors} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-medium">Notes</span>
-                <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="mt-1 w-full border rounded-xl px-3 py-2" placeholder="Allergies, no pineapple, extra pomegranate, etc." />
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  rows={2}
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  placeholder="Allergies, no pineapple, extra pomegranate, etc."
+                />
               </label>
 
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
@@ -509,15 +782,27 @@ export default function HealthyHabitSite() {
                   <p className="text-xl font-bold">₹{total}</p>
                 </div>
                 <p className="text-[11px] text-slate-500 mt-1">
-                  Payments are processed securely. FSSAI Licence No: {FSSAI.number}
+                  Payments are processed securely. FSSAI Licence No:{" "}
+                  {FSSAI.number}
                 </p>
               </div>
 
               <div className="grid sm:grid-cols-3 gap-3">
-                <a href={enquiryLink} target="_blank" rel="noreferrer" className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700">WhatsApp</a>
                 <a
-                  href={`mailto:${"orders@healthyhabit.example"}?subject=${encodeURIComponent("Fruit Bowl Booking")}&body=${encodeURIComponent(
-                    `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nVariant: ${selectedProduct.name}\nQty: ${qty}\nDate: ${date} ${time}\nCity: ${city}\nPincode: ${pincode}\nAddress: ${address}\nNotes: ${notes}\nTotal: ₹${total}`
+                  href={enquiryLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  WhatsApp
+                </a>
+                <a
+                  href={`mailto:${"orders@healthyhabit.example"}?subject=${encodeURIComponent(
+                    "Fruit Bowl Booking"
+                  )}&body=${encodeURIComponent(
+                    `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nVariant: ${
+                      selectedProduct.name
+                    }\nQty: ${qty}\nDate: ${date} ${time}\nCity: ${city}\nPincode: ${pincode}\nAddress: ${address}\nNotes: ${notes}\nTotal: ₹${total}`
                   )}`}
                   className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
                 >
@@ -526,7 +811,9 @@ export default function HealthyHabitSite() {
                 <button
                   onClick={handlePayOnline}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-2xl text-white ${isSubmitting ? "bg-gray-400" : "bg-black hover:opacity-95"}`}
+                  className={`px-4 py-3 rounded-2xl text-white ${
+                    isSubmitting ? "bg-gray-400" : "bg-black hover:opacity-95"
+                  }`}
                 >
                   {isSubmitting ? "Processing..." : "Pay Online"}
                 </button>
@@ -536,68 +823,207 @@ export default function HealthyHabitSite() {
         </div>
       </section>
 
-      {/* Confirmation Modal */}
+      {/* ABOUT FSSAI / FOOD SAFETY */}
+      <section
+        id="fssai"
+        className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-[1.3fr_1fr] gap-8 items-center"
+      >
+        <div>
+          <h2 className="text-3xl font-bold text-emerald-800">
+            Food safety is non-negotiable
+          </h2>
+          <p className="mt-3 text-sm md:text-base text-slate-600 leading-relaxed">
+            {BUSINESS.name} is licensed with the{" "}
+            <span className="font-semibold">Food Safety and Standards Authority of India (FSSAI)</span>.
+            This means we follow strict guidelines on hygiene, sourcing,
+            storage and preparation of every single fruit box.
+          </p>
+          <ul className="mt-4 text-sm text-slate-700 space-y-2 list-disc list-inside">
+            <li>RO-washed fruits & sanitized prep surfaces</li>
+            <li>Food-grade gloves, knives and sealed containers</li>
+            <li>Separate chopping boards for fruits only</li>
+            <li>Cold-chain maintained till dispatch for freshness</li>
+          </ul>
+          <p className="mt-4 text-sm text-emerald-800 font-semibold">
+            FSSAI Licence No: {FSSAI.number}
+          </p>
+        </div>
+        <div className="max-w-sm mx-auto w-full">
+          <FssaiBadge />
+        </div>
+      </section>
+
+      {/* INSTAGRAM STYLE GALLERY */}
+      <section className="bg-white/70 border-y border-emerald-100">
+        <div className="max-w-6xl mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">
+              From our camera roll 📸
+            </h2>
+            <span className="text-xs md:text-sm text-slate-500">
+              Tag us on Instagram with{" "}
+              <span className="font-semibold text-emerald-700">
+                #HealthyHabitBowls
+              </span>
+            </span>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {GALLERY_IMAGES.map((src, i) => (
+              <div
+                key={i}
+                className="relative rounded-2xl overflow-hidden shadow-sm group"
+              >
+                <img
+                  src={src}
+                  alt={`Fruit bowl ${i + 1}`}
+                  className="w-full h-32 md:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-emerald-800">
+          Loved by busy families & offices
+        </h2>
+        <p className="text-slate-600 mt-1 text-sm">
+          Real feedback from regular customers in Hyderabad.
+        </p>
+        <div className="mt-6 grid md:grid-cols-3 gap-6">
+          <TestimonialCard
+            name="Priya R."
+            role="Working mom, Madhapur"
+            quote="Perfect evening snack for my kids. They actually ask for fruit now instead of junk!"
+          />
+          <TestimonialCard
+            name="Rahul S."
+            role="Startup founder, Hitec City"
+            quote="We get a big box for the office every day. Super convenient and looks great in the pantry."
+          />
+          <TestimonialCard
+            name="Neha & Arjun"
+            role="Newly married, Gachibowli"
+            quote="Love the hygiene and taste. The subscription made it so easy to keep fruits at home."
+          />
+        </div>
+      </section>
+
+      {/* CONFIRMATION MODAL */}
       {receipt && (
         <div className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4">
           <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-6">
-            <h3 className="text-xl font-bold text-emerald-800">Payment successful 🎉</h3>
-            <p className="text-sm text-slate-600 mt-1">Here are your order details:</p>
+            <h3 className="text-xl font-bold text-emerald-800">
+              Payment successful 🎉
+            </h3>
+            <p className="text-sm text-slate-600 mt-1">
+              Here are your order details:
+            </p>
             <div className="mt-4 text-sm text-slate-700 space-y-1">
-              <p><b>Order:</b> {receipt.orderId}</p>
-              <p><b>Payment:</b> {receipt.paymentId}</p>
-              <p><b>Customer:</b> {receipt.name} · {receipt.phone} · {receipt.email}</p>
-              <p><b>Item:</b> {receipt.variant} × {receipt.qty} · <b>Total:</b> ₹{receipt.amount}</p>
-              <p><b>Delivery:</b> {receipt.date} at {receipt.time}</p>
-              <p><b>Address:</b> {receipt.address || "pickup"}</p>
+              <p>
+                <b>Order:</b> {receipt.orderId}
+              </p>
+              <p>
+                <b>Payment:</b> {receipt.paymentId}
+              </p>
+              <p>
+                <b>Customer:</b> {receipt.name} · {receipt.phone} ·{" "}
+                {receipt.email}
+              </p>
+              <p>
+                <b>Item:</b> {receipt.variant} × {receipt.qty} ·{" "}
+                <b>Total:</b> ₹{receipt.amount}
+              </p>
+              <p>
+                <b>Delivery:</b> {receipt.date} at {receipt.time}
+              </p>
+              <p>
+                <b>Address:</b> {receipt.address || "pickup"}
+              </p>
             </div>
 
             <div className="mt-5 grid sm:grid-cols-2 gap-3">
-              <a href={customerConfirmLink} target="_blank" rel="noreferrer" className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700">
+              <a
+                href={customerConfirmLink}
+                target="_blank"
+                rel="noreferrer"
+                className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+              >
                 WhatsApp confirmation to customer
               </a>
-              <a href={ownerAlertLink} target="_blank" rel="noreferrer" className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+              <a
+                href={ownerAlertLink}
+                target="_blank"
+                rel="noreferrer"
+                className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+              >
                 Notify {BUSINESS.name}
               </a>
             </div>
 
             <div className="mt-4 text-right">
-              <button onClick={() => setReceipt(null)} className="px-4 py-2 text-sm rounded-xl border hover:bg-slate-50">Close</button>
+              <button
+                onClick={() => setReceipt(null)}
+                className="px-4 py-2 text-sm rounded-xl border hover:bg-slate-50"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Footer */}
+      {/* FOOTER */}
       <footer className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="flex items-center gap-3">
-            <img src={IMG_URL.logo} alt={BUSINESS.name} className="h-10 w-10 rounded-full shadow" />
+            <img
+              src={IMG_URL.logo}
+              alt={BUSINESS.name}
+              className="h-10 w-10 rounded-full shadow"
+            />
             <div>
-              <p className="font-semibold text-emerald-700">{BUSINESS.name}</p>
-              <p className="text-xs text-slate-500">Fresh • Healthy • Convenient</p>
+              <p className="font-semibold text-emerald-700">
+                {BUSINESS.name}
+              </p>
+              <p className="text-xs text-slate-500">
+                Fresh • Healthy • Convenient
+              </p>
             </div>
           </div>
           <div className="text-sm text-slate-600">
             <p>
               Order / WhatsApp:{" "}
-              <a className="text-emerald-700 font-semibold" href={`https://wa.me/${BUSINESS.whatsappOwner}`} target="_blank" rel="noreferrer">
+              <a
+                className="text-emerald-700 font-semibold"
+                href={`https://wa.me/${BUSINESS.whatsappOwner}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 {BUSINESS.whatsappOwner}
               </a>
             </p>
             <p className="mt-1">Email: yadhi1234@gmail.com</p>
             <p className="mt-1">
               Serving: {BUSINESS.serviceCity}
-              {BUSINESS.allowedPincodes.length ? ` (${BUSINESS.allowedPincodes.join(", ")})` : ""}
+              {BUSINESS.allowedPincodes.length
+                ? ` (${BUSINESS.allowedPincodes.join(", ")})`
+                : ""}
             </p>
           </div>
         </div>
 
-        {/* FSSAI badge in footer */}
         <div className="mt-6 max-w-md">
           <FssaiBadge />
         </div>
 
-        <p className="text-xs text-slate-500 mt-6">© {new Date().getFullYear()} {BUSINESS.name}. All rights reserved.</p>
+        <p className="text-xs text-slate-500 mt-6">
+          © {new Date().getFullYear()} {BUSINESS.name}. All rights reserved.
+        </p>
       </footer>
     </div>
   );
