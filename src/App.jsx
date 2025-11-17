@@ -112,7 +112,8 @@ function buildWaLink(phone, text) {
 ======================= */
 function FssaiBadge() {
   return (
-    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3">
+    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+
       <img
         src={IMG_URL.fssaiPoster}
         alt="FSSAI Licensed – Healthy Habit"
@@ -128,7 +129,8 @@ function FssaiBadge() {
           <span className="font-medium tracking-wide">{FSSAI.number}</span>
         </p>
       </div>
-      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0">
+      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0 animate-pulse">
+
         <path
           fill="currentColor"
           d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"
@@ -440,19 +442,20 @@ export default function HealthyHabitSite() {
             <span className="font-semibold">{BUSINESS.name}</span> today.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <a
-              href="#book"
-              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
-            >
-              Book your bowl
-            </a>
-            <a
-              href="#menu"
-              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
-            >
-              View menu
-            </a>
-          </div>
+  <a
+    href="#book"
+    className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ease-out"
+  >
+    Book your bowl
+  </a>
+  <a
+    href="#menu"
+    className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 transform hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 ease-out"
+  >
+    View menu
+  </a>
+</div>
+
           <div className="mt-6 max-w-md">
             <FssaiBadge />
           </div>
@@ -467,12 +470,18 @@ export default function HealthyHabitSite() {
           </div>
         </div>
         <div className="relative">
-          <img
-            src={IMG_URL.hero}
-            alt="Monthly Fruit Box"
-            className="w-full rounded-3xl shadow-xl"
-          />
-        </div>
+  {/* soft animated glow behind the hero image */}
+  <div
+    aria-hidden="true"
+    className="absolute -inset-6 rounded-[40px] bg-gradient-to-br from-emerald-200/60 via-emerald-50 to-orange-100/60 blur-2xl opacity-80 animate-pulse"
+  />
+  <img
+    src={IMG_URL.hero}
+    alt="Monthly Fruit Box"
+    className="relative w-full rounded-3xl shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 ease-out"
+  />
+</div>
+
       </section>
 
       {/* Our Bowls / Menu */}
@@ -489,9 +498,10 @@ export default function HealthyHabitSite() {
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {PRODUCTS.map((p) => (
             <article
-              key={p.sku}
-              className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col"
-            >
+  key={p.sku}
+  className="rounded-3xl bg-white shadow-md p-4 flex flex-col transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ease-out"
+>
+
               <img
                 src={p.image}
                 alt={p.name}
@@ -565,11 +575,12 @@ export default function HealthyHabitSite() {
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {[...PRODUCTS].map((p, i) => (
             <div
-              key={p.sku}
-              className={`rounded-3xl p-6 shadow bg-white ${
-                i === 1 ? "ring-2 ring-emerald-500" : ""
-              }`}
-            >
+  key={p.sku}
+  className={`rounded-3xl p-6 shadow-md bg-white transform hover:-translate-y-1 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-out ${
+    i === 1 ? "ring-2 ring-emerald-500" : ""
+  }`}
+>
+
               <h3 className="text-xl font-semibold text-emerald-800">
                 {p.name}
               </h3>
@@ -645,22 +656,17 @@ export default function HealthyHabitSite() {
               <span className="font-semibold">#HealthyHabitBowls</span>
             </p>
           </div>
-          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[IMG_URL.cam1, IMG_URL.cam2, IMG_URL.cam3, IMG_URL.cam4].map(
-              (src, i) => (
-                <div
-                  key={i}
-                  className="aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm"
-                >
-                  <img
-                    src={src}
-                    alt={`Fruit bowl ${i + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )
-            )}
-          </div>
+          <div
+  key={i}
+  className="group aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+>
+  <img
+    src={src}
+    alt={`Fruit bowl ${i + 1}`}
+    className="w-full h-full object-cover transform group-hover:scale-105 group-hover:rotate-1 transition-transform duration-500 ease-out"
+  />
+</div>
+
         </div>
       </section>
 
