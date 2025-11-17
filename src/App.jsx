@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useMemo, useState, useEffect } from "react";
 
 /* =======================
@@ -5,7 +6,7 @@ import React, { useMemo, useState, useEffect } from "react";
 ======================= */
 const BUSINESS = {
   name: "Healthy Habit",
-  whatsappOwner: "9000925013", // 10 digits, no +91
+  whatsappOwner: "9000925013", // 10-digit number, no +91
   serviceCity: "Hyderabad",
   allowedPincodes: [], // e.g. ["500001","500002"]; keep [] to allow all
 };
@@ -19,27 +20,29 @@ const FSSAI = {
 
 /* =======================
    IMAGES
+   (make sure these filenames exist in /public/images)
 ======================= */
 const IMG_URL = {
-  // favicon-ish logo (you can change later if you want)
+  // logo & hero
   logo: "/images/bowl1.jpg",
+  hero: "/images/monthly-fruit-box-poster.jpg",        // big “Monthly Fruit Box” poster
+  heroFssaiCard: "/images/fssai-card-healthy-habit.jpg", // the vertical FSSAI poster
 
-  // hero image on the right
-  hero: "/images/monthly-fruit-box-hero.png",
+  // camera roll / gallery
+  cam1: "/images/colorful-fruitbox-1.jpg",
+  cam2: "/images/colorful-fruitbox-2.jpg",
+  cam3: "/images/colorful-fruitbox-3.jpg",
+  cam4: "/images/colorful-fruitbox-4.jpg",
 
-  // FSSAI + logo poster
-  fssaiPoster: "/images/healthy-habit-fssai-poster.png",
+  // bowls
+  bowl1: "/images/bowl1.jpg",
+  bowl2: "/images/bowl2.png",
+  bowl3: "/images/bowl3.png",
 
-  // bowls / cards
-  bowl1: "/images/colorful-fruit-box-poster.png",
-  bowl2: "/images/monthly-fruit-box-hero.png",
-  bowl3: "/images/colorful-fruit-box-poster.png",
-
-  // camera roll gallery
-  cam1: "/images/colorful-fruit-box-poster.png",
-  cam2: "/images/monthly-fruit-box-hero.png",
-  cam3: "/images/colorful-fruit-box-poster.png",
-  cam4: "/images/monthly-fruit-box-hero.png",
+  // process
+  process1: "/images/hero.jpg",
+  process2: "/images/bowl2.png",
+  process3: "/images/bowl3.png",
 };
 
 /* =======================
@@ -98,7 +101,8 @@ async function getPublicKey() {
    HELPERS
 ======================= */
 const isTenDigitPhone = (p) => /^[6-9]\d{9}$/.test(String(p || "").trim());
-const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
+const isEmail = (e) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
 const onlyDigits = (s) => String(s || "").replace(/\D/g, "");
 
 function buildWaLink(phone, text) {
@@ -113,31 +117,32 @@ function buildWaLink(phone, text) {
 function FssaiBadge() {
   return (
     <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-
       <img
-        src={IMG_URL.fssaiPoster}
-        alt="FSSAI Licensed – Healthy Habit"
-        className="h-10 w-auto sm:h-12 rounded-xl object-contain bg-white"
+        src="/images/fssai-logo.png" // your FSSAI logo file
+        alt="FSSAI"
+        className="h-8 w-auto sm:h-9 object-contain"
         loading="lazy"
       />
       <div className="flex-1">
-        <p className="text-xs sm:text-sm font-semibold text-emerald-800 leading-tight">
-          Licensed with FSSAI (Food Safety and Standards Authority of India)
+        <p className="text-sm font-semibold text-emerald-800 leading-tight">
+          FSSAI Licensed
         </p>
-        <p className="text-[11px] sm:text-xs text-slate-600 leading-tight">
+        <p className="text-xs text-slate-600 leading-tight">
           Licence No:{" "}
           <span className="font-medium tracking-wide">{FSSAI.number}</span>
         </p>
       </div>
-      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0 animate-pulse">
-
+      <svg
+        viewBox="0 0 24 24"
+        className="h-6 w-6 text-emerald-600 shrink-0 animate-pulse"
+      >
         <path
           fill="currentColor"
           d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"
         />
         <path
-          fill="#ffffff"
-          d="M10.5 13.2l-2-2 1.1-1.1 0.9 0.9 3.9-3.9 1.1 1.1z"
+          fill="#fff"
+          d="M10.5 13.2l-2-2 1.1-1.1l.9.9 3.9-3.9 1.1 1.1z"
         />
       </svg>
     </div>
@@ -148,7 +153,7 @@ function FssaiBadge() {
    MAIN PAGE
 ======================= */
 export default function HealthyHabitSite() {
-  // SEO
+  /* SEO */
   useEffect(() => {
     document.title = `${BUSINESS.name} – Monthly Fruit Box & Fresh Fruit Bowls`;
     const meta = document.createElement("meta");
@@ -158,7 +163,7 @@ export default function HealthyHabitSite() {
     return () => document.head.removeChild(meta);
   }, []);
 
-  // form state
+  /* FORM STATE */
   const [variant, setVariant] = useState(PRODUCTS[0].sku);
   const [qty, setQty] = useState(1);
   const [name, setName] = useState("");
@@ -180,25 +185,71 @@ export default function HealthyHabitSite() {
     [variant]
   );
   const total = useMemo(
-    () => qty * (selectedProduct ? selectedProduct.price : 0),
+    () => qty * (selectedProduct?.price || 0),
     [qty, selectedProduct]
   );
 
-  // enquiry link
+  /* WHATSAPP ENQUIRY LINK */
   const enquiryLink = useMemo(() => {
     const msg =
       `Hi ${BUSINESS.name}!%0A%0AI'd like to book a Fruit Bowl order:%0A%0A` +
-      `Name: ${name}%0APhone: ${phone}%0AEmail: ${email}%0A` +
-      `Variant: ${selectedProduct?.name || ""}%0AQuantity: ${qty}%0A` +
+      `Name: ${name}%0A` +
+      `Phone: ${phone}%0A` +
+      `Email: ${email}%0A` +
+      `Variant: ${selectedProduct?.name || ""}%0A` +
+      `Quantity: ${qty}%0A` +
       `Preferred delivery: ${date} at ${time}%0A` +
-      `City: ${city}%0APincode: ${pincode}%0A` +
+      `City: ${city}%0A` +
+      `Pincode: ${pincode}%0A` +
       `Address: ${address || "pickup"}%0A` +
       (notes ? `Notes: ${notes}%0A` : "") +
       `%0A(Website enquiry)`;
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${msg}`;
-  }, [name, phone, email, selectedProduct, qty, date, time, city, pincode, address, notes]);
+  }, [
+    name,
+    phone,
+    email,
+    selectedProduct,
+    qty,
+    date,
+    time,
+    city,
+    pincode,
+    address,
+    notes,
+  ]);
 
-  // validation
+  /* EMAIL BODY */
+  const emailBody = useMemo(
+    () =>
+      `Name: ${name}
+Phone: ${phone}
+Email: ${email}
+Variant: ${selectedProduct?.name || ""}
+Qty: ${qty}
+Date: ${date} ${time}
+City: ${city}
+Pincode: ${pincode}
+Address: ${address}
+Notes: ${notes}
+Total: ₹${total}`,
+    [
+      name,
+      phone,
+      email,
+      selectedProduct,
+      qty,
+      date,
+      time,
+      city,
+      pincode,
+      address,
+      notes,
+      total,
+    ]
+  );
+
+  /* VALIDATION */
   function validate() {
     const e = {};
     if (!name.trim()) e.name = "Name is required";
@@ -208,10 +259,12 @@ export default function HealthyHabitSite() {
     if (!date) e.date = "Choose a delivery date";
     if (!time) e.time = "Choose a delivery time";
     if (!qty || qty < 1) e.qty = "Quantity must be at least 1";
+
     if (!city.trim()) e.city = "City is required";
     if (city.trim().toLowerCase() !== BUSINESS.serviceCity.toLowerCase()) {
       e.city = `We currently serve ${BUSINESS.serviceCity} only`;
     }
+
     const pin = onlyDigits(pincode);
     if (pin.length !== 6) e.pincode = "Enter a 6-digit pincode";
     if (
@@ -220,13 +273,15 @@ export default function HealthyHabitSite() {
     ) {
       e.pincode = `Pincode not in service area for ${BUSINESS.serviceCity}`;
     }
+
     if (address && address.trim().length < 6)
       e.address = "Add more address details";
+
     setErrors(e);
     return Object.keys(e).length === 0;
   }
 
-  // payment
+  /* PAYMENT */
   async function handlePayOnline() {
     if (!validate()) {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -253,7 +308,7 @@ export default function HealthyHabitSite() {
             city,
             pincode,
             address,
-            variant: selectedProduct.name,
+            variant: selectedProduct?.name || "",
             qty,
             date,
             time,
@@ -275,14 +330,14 @@ export default function HealthyHabitSite() {
         amount: order.amount,
         currency: order.currency,
         name: BUSINESS.name,
-        description: `${selectedProduct.name} x ${qty}`,
+        description: `${selectedProduct?.name || ""} x ${qty}`,
         order_id: order.id,
         prefill: { name, email, contact: phone },
         notes: {
           city,
           pincode,
           address,
-          variant: selectedProduct.name,
+          variant: selectedProduct?.name || "",
           qty,
           date,
           time,
@@ -301,7 +356,7 @@ export default function HealthyHabitSite() {
             city,
             pincode,
             address,
-            variant: selectedProduct.name,
+            variant: selectedProduct?.name || "",
             qty,
             date,
             time,
@@ -320,7 +375,7 @@ export default function HealthyHabitSite() {
     }
   }
 
-  // confirmation links
+  /* CONFIRMATION LINKS */
   const customerConfirmLink = useMemo(() => {
     if (!receipt) return "#";
     const text =
@@ -357,10 +412,12 @@ export default function HealthyHabitSite() {
       <p className="text-xs text-red-600 mt-1">{errors[id]}</p>
     ) : null;
 
-  /* ========= RENDER ========= */
+  /* CAMERA ROLL IMAGES */
+  const cameraImages = [IMG_URL.cam1, IMG_URL.cam2, IMG_URL.cam3, IMG_URL.cam4];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800">
-      {/* Header */}
+      {/* HEADER */}
       <header className="backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/50 sticky top-0 z-50 border-b border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -389,9 +446,6 @@ export default function HealthyHabitSite() {
             <a href="#food-safety" className="hover:text-emerald-700">
               Food safety
             </a>
-            <a href="#corporate" className="hover:text-emerald-700">
-              Corporate orders
-            </a>
             <a href="#faq" className="hover:text-emerald-700">
               FAQ
             </a>
@@ -413,10 +467,10 @@ export default function HealthyHabitSite() {
             </a>
           </div>
         </div>
-        {/* City + FSSAI badge bar */}
-        <div className="bg-emerald-700/95 text-white">
+        {/* City + FSSAI bar */}
+        <div className="bg-emerald-700/90 text-white">
           <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-4">
-            <span className="text-xs sm:text-sm">
+            <span className="text-sm">
               Now serving <b>{BUSINESS.serviceCity}</b>. FSSAI Lic No:{" "}
               <b>{FSSAI.number}</b>
             </span>
@@ -427,7 +481,7 @@ export default function HealthyHabitSite() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* HERO */}
       <section
         className="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
         id="home"
@@ -442,20 +496,20 @@ export default function HealthyHabitSite() {
             <span className="font-semibold">{BUSINESS.name}</span> today.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-  <a
-    href="#book"
-    className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ease-out"
-  >
-    Book your bowl
-  </a>
-  <a
-    href="#menu"
-    className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 transform hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 ease-out"
-  >
-    View menu
-  </a>
-</div>
-
+            <a
+              href="#book"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ease-out"
+            >
+              Book your bowl
+            </a>
+            <a
+              href="#menu"
+              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 transform hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 ease-out"
+            >
+              View menu
+            </a>
+          </div>
+          {/* FSSAI badge under buttons */}
           <div className="mt-6 max-w-md">
             <FssaiBadge />
           </div>
@@ -470,21 +524,20 @@ export default function HealthyHabitSite() {
           </div>
         </div>
         <div className="relative">
-  {/* soft animated glow behind the hero image */}
-  <div
-    aria-hidden="true"
-    className="absolute -inset-6 rounded-[40px] bg-gradient-to-br from-emerald-200/60 via-emerald-50 to-orange-100/60 blur-2xl opacity-80 animate-pulse"
-  />
-  <img
-    src={IMG_URL.hero}
-    alt="Monthly Fruit Box"
-    className="relative w-full rounded-3xl shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 ease-out"
-  />
-</div>
-
+          {/* animated glow */}
+          <div
+            aria-hidden="true"
+            className="absolute -inset-6 rounded-[40px] bg-gradient-to-br from-emerald-200/60 via-emerald-50 to-orange-100/60 blur-2xl opacity-80 animate-pulse"
+          />
+          <img
+            src={IMG_URL.hero}
+            alt="Monthly Fruit Box"
+            className="relative w-full rounded-3xl shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 ease-out"
+          />
+        </div>
       </section>
 
-      {/* Our Bowls / Menu */}
+      {/* OUR BOWLS */}
       <section id="menu" className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-3xl font-bold text-emerald-800">Our Bowls</h2>
@@ -498,10 +551,9 @@ export default function HealthyHabitSite() {
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {PRODUCTS.map((p) => (
             <article
-  key={p.sku}
-  className="rounded-3xl bg-white shadow-md p-4 flex flex-col transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ease-out"
->
-
+              key={p.sku}
+              className="rounded-3xl bg-white shadow-md p-4 flex flex-col transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ease-out"
+            >
               <img
                 src={p.image}
                 alt={p.name}
@@ -535,52 +587,20 @@ export default function HealthyHabitSite() {
         </div>
       </section>
 
-      {/* Why Us */}
-      <section
-        id="why-us"
-        className="bg-white/60 border-y border-emerald-100"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
-          {[
-            {
-              t: "Squeaky clean",
-              d: "RO-washed fruits, food-grade gloves & sanitized prep surfaces.",
-            },
-            {
-              t: "Always fresh",
-              d: "We cut close to delivery time so your bowl stays crisp & juicy.",
-            },
-            {
-              t: "Flexible plans",
-              d: "Book once, schedule daily, or choose a monthly subscription box.",
-            },
-          ].map((f) => (
-            <div key={f.t} className="rounded-3xl bg-white p-6 shadow">
-              <p className="text-2xl">🥝</p>
-              <h3 className="mt-2 text-xl font-semibold text-emerald-800">
-                {f.t}
-              </h3>
-              <p className="text-slate-600 text-sm">{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Pricing */}
+      {/* PRICING */}
       <section id="pricing" className="max-w-6xl mx-auto px-4 py-12">
         <h2 className="text-3xl font-bold text-emerald-800">Simple pricing</h2>
         <p className="text-slate-600 mt-1">
-          Bulk / office / party orders available on request.
+          Bulk/office/party orders available on request.
         </p>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {[...PRODUCTS].map((p, i) => (
             <div
-  key={p.sku}
-  className={`rounded-3xl p-6 shadow-md bg-white transform hover:-translate-y-1 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-out ${
-    i === 1 ? "ring-2 ring-emerald-500" : ""
-  }`}
->
-
+              key={p.sku}
+              className={`rounded-3xl p-6 shadow-md bg-white transform hover:-translate-y-1 hover:shadow-xl hover:scale-[1.01] transition-all duration-300 ease-out ${
+                i === 1 ? "ring-2 ring-emerald-500" : ""
+              }`}
+            >
               <h3 className="text-xl font-semibold text-emerald-800">
                 {p.name}
               </h3>
@@ -608,69 +628,123 @@ export default function HealthyHabitSite() {
         </div>
       </section>
 
-      {/* Food safety + FSSAI section */}
+      {/* FOOD SAFETY + CAMERA ROLL */}
       <section
         id="food-safety"
-        className="bg-emerald-50/70 border-y border-emerald-100"
+        className="bg-emerald-50/60 border-y border-emerald-100"
       >
-        <div className="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-8 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-emerald-800">
-              Food safety first, always
-            </h2>
-            <p className="mt-2 text-sm md:text-base text-slate-700">
-              {BUSINESS.name} is licensed with the{" "}
-              <strong>Food Safety and Standards Authority of India (FSSAI)</strong>.
-              We follow strict guidelines on hygiene, sourcing, storage and
-              preparation for every single fruit box.
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-slate-700 list-disc list-inside">
-              <li>RO-washed fruits & sanitized prep surfaces</li>
-              <li>Food-grade gloves, knives and sealed containers</li>
-              <li>Separate chopping boards for fruits only</li>
-              <li>Cold-chain maintained till dispatch for freshness</li>
-            </ul>
-            <p className="mt-3 text-xs font-semibold text-emerald-800">
-              FSSAI Licence No: {FSSAI.number}
-            </p>
+        <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
+          <div className="grid md:grid-cols-[2fr,1fr] gap-8 items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-emerald-800">
+                Food safety first 🥼
+              </h2>
+              <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+                {BUSINESS.name} is licensed with the{" "}
+                <span className="font-semibold">
+                  Food Safety and Standards Authority of India (FSSAI)
+                </span>
+                . This means we follow strict guidelines on hygiene, sourcing,
+                storage and preparation of every single fruit box.
+              </p>
+              <ul className="mt-3 text-sm text-slate-700 space-y-1 list-disc list-inside">
+                <li>RO-washed fruits & sanitized prep surfaces</li>
+                <li>Food-grade gloves, knives and sealed containers</li>
+                <li>Separate chopping boards for fruits only</li>
+                <li>Cold-chain maintained till dispatch for freshness</li>
+              </ul>
+              <p className="mt-3 text-xs font-semibold text-emerald-700">
+                FSSAI Licence No: {FSSAI.number}
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <img
+                src={IMG_URL.heroFssaiCard}
+                alt="Healthy Habit FSSAI poster"
+                className="w-full max-w-xs rounded-3xl shadow-lg border border-emerald-100"
+              />
+              <FssaiBadge />
+            </div>
           </div>
-          <div className="flex justify-center">
-            <img
-              src={IMG_URL.fssaiPoster}
-              alt="Healthy Habit FSSAI Licence"
-              className="max-h-72 rounded-3xl shadow-lg object-contain bg-white"
-            />
+
+          {/* Camera roll */}
+          <div className="mt-6">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-xl font-bold text-emerald-800 flex items-center gap-2">
+                From our camera roll <span>📸</span>
+              </h3>
+              <p className="text-xs text-slate-500">
+                Tag us on Instagram with{" "}
+                <span className="font-semibold text-emerald-700">
+                  #HealthyHabitBowls
+                </span>
+              </p>
+            </div>
+            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
+              {cameraImages.map((src, i) => (
+                <div
+                  key={i}
+                  className="group aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+                >
+                  <img
+                    src={src}
+                    alt={`Fruit bowl ${i + 1}`}
+                    className="w-full h-full object-cover transform group-hover:scale-105 group-hover:rotate-1 transition-transform duration-500 ease-out"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Camera roll / Instagram-style gallery */}
-      <section className="bg-white border-b border-emerald-100">
-        <div className="max-w-6xl mx-auto px-4 py-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-            <h2 className="text-2xl font-bold text-emerald-800">
-              From our camera roll <span>📸</span>
-            </h2>
-            <p className="text-xs sm:text-sm text-emerald-700">
-              Tag us on Instagram with{" "}
-              <span className="font-semibold">#HealthyHabitBowls</span>
-            </p>
-          </div>
-          <div
-  key={i}
-  className="group aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
->
-  <img
-    src={src}
-    alt={`Fruit bowl ${i + 1}`}
-    className="w-full h-full object-cover transform group-hover:scale-105 group-hover:rotate-1 transition-transform duration-500 ease-out"
-  />
-</div>
-
+      {/* CORPORATE ORDERS */}
+      <section
+        id="corporate"
+        className="max-w-6xl mx-auto px-4 py-12 flex flex-col md:flex-row gap-8 items-stretch"
+      >
+        <div className="md:w-1/2">
+          <h2 className="text-3xl font-bold text-emerald-800">
+            Corporate & office orders
+          </h2>
+          <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+            Fuel your team with fresh fruit bowls instead of sugary snacks.
+            Perfect for stand-ups, client meetings, celebrations and monthly
+            wellness programs.
+          </p>
+          <ul className="mt-3 text-sm text-slate-700 space-y-1 list-disc list-inside">
+            <li>Daily/weekly fruit bowls for teams</li>
+            <li>Custom labels with your company logo</li>
+            <li>Bulk pricing for 20+ bowls per day</li>
+            <li>On-time delivery across major IT hubs in Hyderabad</li>
+          </ul>
+        </div>
+        <div className="md:w-1/2 rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4 shadow-md transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+          <h3 className="text-lg font-semibold text-emerald-800">
+            Talk to us about office plans
+          </h3>
+          <p className="text-sm text-slate-700">
+            Share your team size, preferred days and budget. We’ll send you a
+            simple proposal within 24 hours.
+          </p>
+          <a
+            href={buildWaLink(
+              BUSINESS.whatsappOwner,
+              "Hi, I’d like to know about corporate fruit box plans for our office."
+            )}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center justify-center px-4 py-3 rounded-2xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 shadow hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+          >
+            WhatsApp our corporate desk
+          </a>
+          <p className="text-xs text-slate-500">
+            Ideal for offices, co-working spaces, gyms, salons & clinics.
+          </p>
         </div>
       </section>
 
-      {/* Booking */}
+      {/* BOOKING SECTION */}
       <section
         id="book"
         className="bg-emerald-50/60 border-t border-emerald-100"
@@ -837,27 +911,25 @@ export default function HealthyHabitSite() {
                   href={enquiryLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   WhatsApp
                 </a>
                 <a
                   href={`mailto:${"orders@healthyhabit.example"}?subject=${encodeURIComponent(
                     "Fruit Bowl Booking"
-                  )}&body=${encodeURIComponent(
-                    `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nVariant: ${
-                      selectedProduct?.name || ""
-                    }\nQty: ${qty}\nDate: ${date} ${time}\nCity: ${city}\nPincode: ${pincode}\nAddress: ${address}\nNotes: ${notes}\nTotal: ₹${total}`
-                  )}`}
-                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  )}&body=${encodeURIComponent(emailBody)}`}
+                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   Email
                 </a>
                 <button
                   onClick={handlePayOnline}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-2xl text-white ${
-                    isSubmitting ? "bg-gray-400" : "bg-black hover:opacity-95"
+                  className={`px-4 py-3 rounded-2xl text-white shadow-md transform transition-all duration-300 ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:-translate-y-0.5 hover:shadow-xl hover:opacity-95"
                   }`}
                 >
                   {isSubmitting ? "Processing..." : "Pay Online"}
@@ -868,108 +940,7 @@ export default function HealthyHabitSite() {
         </div>
       </section>
 
-      {/* Corporate orders */}
-      <section
-        id="corporate"
-        className="bg-white border-t border-emerald-100"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-start">
-          <div>
-            <h2 className="text-3xl font-bold text-emerald-800">
-              Corporate orders for offices
-            </h2>
-            <p className="mt-2 text-slate-700 text-sm md:text-base">
-              Fuel your team with fresh fruit bowls delivered directly to your
-              workplace. Perfect for stand-ups, town halls, wellness days and
-              client meetings.
-            </p>
-            <ul className="mt-4 space-y-2 text-sm text-slate-700 list-disc list-inside">
-              <li>Customised plans for 20–500 employees</li>
-              <li>Daily, weekly or monthly delivery slots</li>
-              <li>Invoice & GST billing available</li>
-              <li>Dedicated account manager for your office</li>
-            </ul>
-          </div>
-          <div className="rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4">
-            <p className="text-sm text-slate-700">
-              Share a few details and we’ll respond with a quote & menu options
-              for your office within 1 working day.
-            </p>
-            <p className="text-xs text-slate-600">
-              Email us at{" "}
-              <a
-                href="mailto:orders@healthyhabit.example?subject=Corporate%20fruit%20box%20enquiry"
-                className="text-emerald-700 font-semibold"
-              >
-                orders@healthyhabit.example
-              </a>{" "}
-              or ping us on WhatsApp.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="mailto:orders@healthyhabit.example?subject=Corporate%20fruit%20box%20enquiry"
-                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white text-sm"
-              >
-                Mail us your requirement
-              </a>
-              <a
-                href={`https://wa.me/${BUSINESS.whatsappOwner}?text=${encodeURIComponent(
-                  "Hi, I’d like to enquire about corporate fruit box plans for our office."
-                )}`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 text-sm"
-              >
-                WhatsApp us
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ (simple) */}
-      <section
-        id="faq"
-        className="bg-white/60 border-y border-emerald-100"
-      >
-        <div className="max-w-6xl mx-auto px-4 py-12">
-          <h2 className="text-3xl font-bold text-emerald-800">
-            Frequently asked questions
-          </h2>
-          <div className="mt-6 grid md:grid-cols-2 gap-6">
-            {[
-              {
-                q: "Do you add sugar or preservatives?",
-                a: "Never. Only fresh fruit. We may include lemon or mint on request.",
-              },
-              {
-                q: "How do subscriptions work?",
-                a: "Choose your bowl and delivery window. We prep fresh daily and you can pause anytime via WhatsApp.",
-              },
-              {
-                q: "What areas do you deliver to?",
-                a: "We currently serve core Hyderabad city limits. For bulk/office orders, we can extend coverage.",
-              },
-              {
-                q: "Can I customize my bowl?",
-                a: "Yes! Mention allergies or dislikes in notes. We’ll confirm substitutions when possible.",
-              },
-            ].map((f) => (
-              <details
-                key={f.q}
-                className="rounded-2xl bg-white shadow p-5"
-              >
-                <summary className="font-semibold cursor-pointer text-emerald-800">
-                  {f.q}
-                </summary>
-                <p className="text-sm text-slate-600 mt-2">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Confirmation Modal */}
+      {/* CONFIRMATION MODAL */}
       {receipt && (
         <div className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4">
           <div className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-6">
@@ -1033,7 +1004,7 @@ export default function HealthyHabitSite() {
         </div>
       )}
 
-      {/* Footer */}
+      {/* FOOTER */}
       <footer className="max-w-6xl mx-auto px-4 py-10">
         <div className="flex flex-col md:flex-row items-start justify-between gap-6">
           <div className="flex items-center gap-3">
