@@ -21,7 +21,7 @@ const FSSAI = {
    IMAGES
 ======================= */
 const IMG_URL = {
-  // favicon-ish logo (you can change later if you want)
+  // favicon-ish logo
   logo: "/images/bowl1.jpg",
 
   // hero image on the right
@@ -98,7 +98,8 @@ async function getPublicKey() {
    HELPERS
 ======================= */
 const isTenDigitPhone = (p) => /^[6-9]\d{9}$/.test(String(p || "").trim());
-const isEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
+const isEmail = (e) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(e || "").trim());
 const onlyDigits = (s) => String(s || "").replace(/\D/g, "");
 
 function buildWaLink(phone, text) {
@@ -112,7 +113,7 @@ function buildWaLink(phone, text) {
 ======================= */
 function FssaiBadge() {
   return (
-    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3">
+    <div className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
       <img
         src={IMG_URL.fssaiPoster}
         alt="FSSAI Licensed – Healthy Habit"
@@ -128,7 +129,10 @@ function FssaiBadge() {
           <span className="font-medium tracking-wide">{FSSAI.number}</span>
         </p>
       </div>
-      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0">
+      <svg
+        viewBox="0 0 24 24"
+        className="h-6 w-6 text-emerald-600 shrink-0 animate-pulse"
+      >
         <path
           fill="currentColor"
           d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"
@@ -194,7 +198,19 @@ export default function HealthyHabitSite() {
       (notes ? `Notes: ${notes}%0A` : "") +
       `%0A(Website enquiry)`;
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${msg}`;
-  }, [name, phone, email, selectedProduct, qty, date, time, city, pincode, address, notes]);
+  }, [
+    name,
+    phone,
+    email,
+    selectedProduct,
+    qty,
+    date,
+    time,
+    city,
+    pincode,
+    address,
+    notes,
+  ]);
 
   // validation
   function validate() {
@@ -397,7 +413,7 @@ export default function HealthyHabitSite() {
           <div className="flex gap-2">
             <a
               href="#book"
-              className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700"
+              className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
             >
               Book now
             </a>
@@ -405,7 +421,7 @@ export default function HealthyHabitSite() {
               href={`https://wa.me/${BUSINESS.whatsappOwner}`}
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+              className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transform hover:-translate-y-0.5 transition-all duration-300"
             >
               WhatsApp
             </a>
@@ -427,7 +443,7 @@ export default function HealthyHabitSite() {
 
       {/* Hero */}
       <section
-        className="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
+        className="relative max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
         id="home"
       >
         <div>
@@ -442,13 +458,13 @@ export default function HealthyHabitSite() {
           <div className="mt-6 flex flex-wrap gap-3">
             <a
               href="#book"
-              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
             >
               Book your bowl
             </a>
             <a
               href="#menu"
-              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
             >
               View menu
             </a>
@@ -467,11 +483,31 @@ export default function HealthyHabitSite() {
           </div>
         </div>
         <div className="relative">
+          {/* soft glow behind hero */}
+          <div
+            aria-hidden="true"
+            className="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-emerald-200/70 via-emerald-50 to-orange-100/80 blur-2xl opacity-80 animate-pulse"
+          />
           <img
             src={IMG_URL.hero}
             alt="Monthly Fruit Box"
-            className="w-full rounded-3xl shadow-xl"
+            className="relative w-full rounded-3xl shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-500 ease-out"
           />
+          {/* floating fruit emojis on desktop */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none hidden md:block"
+          >
+            <span className="absolute -top-5 left-3 text-3xl animate-bounce">
+              🍊
+            </span>
+            <span className="absolute -bottom-4 right-6 text-3xl animate-bounce delay-150">
+              🍓
+            </span>
+            <span className="absolute top-6 -right-4 text-2xl animate-ping text-emerald-500/70">
+              🥝
+            </span>
+          </div>
         </div>
       </section>
 
@@ -481,7 +517,7 @@ export default function HealthyHabitSite() {
           <h2 className="text-3xl font-bold text-emerald-800">Our Bowls</h2>
           <a
             href="#book"
-            className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
+            className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
           >
             Quick order
           </a>
@@ -490,7 +526,7 @@ export default function HealthyHabitSite() {
           {PRODUCTS.map((p) => (
             <article
               key={p.sku}
-              className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col"
+              className="rounded-3xl bg-white shadow-md hover:shadow-xl transition-all duration-300 p-4 flex flex-col transform hover:-translate-y-1"
             >
               <img
                 src={p.image}
@@ -515,7 +551,7 @@ export default function HealthyHabitSite() {
                 <p className="text-lg font-bold">₹{p.price}</p>
                 <a
                   href="#book"
-                  className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                  className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   Book
                 </a>
@@ -526,27 +562,30 @@ export default function HealthyHabitSite() {
       </section>
 
       {/* Why Us */}
-      <section
-        id="why-us"
-        className="bg-white/60 border-y border-emerald-100"
-      >
+      <section id="why-us" className="bg-white/60 border-y border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
           {[
             {
               t: "Squeaky clean",
               d: "RO-washed fruits, food-grade gloves & sanitized prep surfaces.",
+              icon: "🧼",
             },
             {
               t: "Always fresh",
               d: "We cut close to delivery time so your bowl stays crisp & juicy.",
+              icon: "🍉",
             },
             {
               t: "Flexible plans",
               d: "Book once, schedule daily, or choose a monthly subscription box.",
+              icon: "📆",
             },
           ].map((f) => (
-            <div key={f.t} className="rounded-3xl bg-white p-6 shadow">
-              <p className="text-2xl">🥝</p>
+            <div
+              key={f.t}
+              className="rounded-3xl bg-white p-6 shadow-md transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+            >
+              <p className="text-2xl">{f.icon}</p>
               <h3 className="mt-2 text-xl font-semibold text-emerald-800">
                 {f.t}
               </h3>
@@ -566,7 +605,7 @@ export default function HealthyHabitSite() {
           {[...PRODUCTS].map((p, i) => (
             <div
               key={p.sku}
-              className={`rounded-3xl p-6 shadow bg-white ${
+              className={`rounded-3xl p-6 shadow-md bg-white transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300 ${
                 i === 1 ? "ring-2 ring-emerald-500" : ""
               }`}
             >
@@ -588,7 +627,7 @@ export default function HealthyHabitSite() {
               </ul>
               <a
                 href="#book"
-                className="mt-5 inline-block w-full text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                className="mt-5 inline-block w-full text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
               >
                 Book {p.name}
               </a>
@@ -627,7 +666,7 @@ export default function HealthyHabitSite() {
             <img
               src={IMG_URL.fssaiPoster}
               alt="Healthy Habit FSSAI Licence"
-              className="max-h-72 rounded-3xl shadow-lg object-contain bg-white"
+              className="max-h-72 rounded-3xl shadow-lg object-contain bg-white transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
             />
           </div>
         </div>
@@ -650,12 +689,12 @@ export default function HealthyHabitSite() {
               (src, i) => (
                 <div
                   key={i}
-                  className="aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm"
+                  className="group aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
                 >
                   <img
                     src={src}
                     alt={`Fruit bowl ${i + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transform group-hover:scale-105 group-hover:rotate-1 transition-transform duration-500 ease-out"
                   />
                 </div>
               )
@@ -677,14 +716,14 @@ export default function HealthyHabitSite() {
             We’ll confirm on WhatsApp within minutes.
           </p>
 
-          <div className="mt-6 rounded-3xl bg-white shadow p-6 grid md:grid-cols-2 gap-5">
+          <div className="mt-6 rounded-3xl bg-white shadow-md hover:shadow-xl transition-shadow duration-300 p-6 grid md:grid-cols-2 gap-5">
             <div className="space-y-4">
               <label className="block">
                 <span className="text-sm font-medium">Your name *</span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                   placeholder="e.g., Priya"
                 />
                 <Error id="name" />
@@ -695,7 +734,7 @@ export default function HealthyHabitSite() {
                 <input
                   value={phone}
                   onChange={(e) => setPhone(onlyDigits(e.target.value))}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                   placeholder="98XXXXXXXX"
                   maxLength={10}
                 />
@@ -707,7 +746,7 @@ export default function HealthyHabitSite() {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                   placeholder="you@example.com"
                 />
                 <Error id="email" />
@@ -718,7 +757,7 @@ export default function HealthyHabitSite() {
                 <select
                   value={variant}
                   onChange={(e) => setVariant(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                 >
                   {PRODUCTS.map((p) => (
                     <option value={p.sku} key={p.sku}>
@@ -726,6 +765,7 @@ export default function HealthyHabitSite() {
                     </option>
                   ))}
                 </select>
+                <Error id="variant" />
               </label>
 
               <label className="block">
@@ -737,7 +777,7 @@ export default function HealthyHabitSite() {
                   onChange={(e) =>
                     setQty(Math.max(1, Number(e.target.value) || 1))
                   }
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                 />
                 <Error id="qty" />
               </label>
@@ -750,7 +790,7 @@ export default function HealthyHabitSite() {
                   <input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="mt-1 w-full border rounded-xl px-3 py-2"
+                    className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                     placeholder={BUSINESS.serviceCity}
                   />
                   <Error id="city" />
@@ -760,7 +800,7 @@ export default function HealthyHabitSite() {
                   <input
                     value={pincode}
                     onChange={(e) => setPincode(onlyDigits(e.target.value))}
-                    className="mt-1 w-full border rounded-xl px-3 py-2"
+                    className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                     placeholder="6-digit"
                     maxLength={6}
                   />
@@ -774,7 +814,7 @@ export default function HealthyHabitSite() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                 />
                 <Error id="date" />
               </label>
@@ -785,7 +825,7 @@ export default function HealthyHabitSite() {
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                 />
                 <Error id="time" />
               </label>
@@ -798,7 +838,7 @@ export default function HealthyHabitSite() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   rows={3}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                   placeholder="Flat / Street / Landmark"
                 />
                 <Error id="address" />
@@ -810,7 +850,7 @@ export default function HealthyHabitSite() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="mt-1 w-full border rounded-xl px-3 py-2"
+                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
                   placeholder="Allergies, no pineapple, extra pomegranate, etc."
                 />
               </label>
@@ -831,7 +871,7 @@ export default function HealthyHabitSite() {
                   href={enquiryLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
+                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   WhatsApp
                 </a>
@@ -843,15 +883,17 @@ export default function HealthyHabitSite() {
                       selectedProduct?.name || ""
                     }\nQty: ${qty}\nDate: ${date} ${time}\nCity: ${city}\nPincode: ${pincode}\nAddress: ${address}\nNotes: ${notes}\nTotal: ₹${total}`
                   )}`}
-                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
                 >
                   Email
                 </a>
                 <button
                   onClick={handlePayOnline}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-2xl text-white ${
-                    isSubmitting ? "bg-gray-400" : "bg-black hover:opacity-95"
+                  className={`px-4 py-3 rounded-2xl text-white shadow-md transform transition-all duration-300 ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:opacity-95 hover:-translate-y-0.5 hover:shadow-xl"
                   }`}
                 >
                   {isSubmitting ? "Processing..." : "Pay Online"}
@@ -863,10 +905,7 @@ export default function HealthyHabitSite() {
       </section>
 
       {/* Corporate orders */}
-      <section
-        id="corporate"
-        className="bg-white border-t border-emerald-100"
-      >
+      <section id="corporate" className="bg-white border-t border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-start">
           <div>
             <h2 className="text-3xl font-bold text-emerald-800">
@@ -884,7 +923,7 @@ export default function HealthyHabitSite() {
               <li>Dedicated account manager for your office</li>
             </ul>
           </div>
-          <div className="rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4">
+          <div className="rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4 shadow-md transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <p className="text-sm text-slate-700">
               Share a few details and we’ll respond with a quote & menu options
               for your office within 1 working day.
@@ -902,7 +941,7 @@ export default function HealthyHabitSite() {
             <div className="flex flex-wrap gap-3">
               <a
                 href="mailto:orders@healthyhabit.example?subject=Corporate%20fruit%20box%20enquiry"
-                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white text-sm"
+                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white text-sm shadow hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
               >
                 Mail us your requirement
               </a>
@@ -912,7 +951,7 @@ export default function HealthyHabitSite() {
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 text-sm"
+                className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 text-sm hover:bg-emerald-50 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
               >
                 WhatsApp us
               </a>
@@ -922,10 +961,7 @@ export default function HealthyHabitSite() {
       </section>
 
       {/* FAQ (simple) */}
-      <section
-        id="faq"
-        className="bg-white/60 border-y border-emerald-100"
-      >
+      <section id="faq" className="bg-white/60 border-y border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <h2 className="text-3xl font-bold text-emerald-800">
             Frequently asked questions
@@ -951,7 +987,7 @@ export default function HealthyHabitSite() {
             ].map((f) => (
               <details
                 key={f.q}
-                className="rounded-2xl bg-white shadow p-5"
+                className="rounded-2xl bg-white shadow-md hover:shadow-lg transition-shadow duration-300 p-5"
               >
                 <summary className="font-semibold cursor-pointer text-emerald-800">
                   {f.q}
