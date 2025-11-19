@@ -1,3 +1,4 @@
+// src/App.jsx
 import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
@@ -22,12 +23,21 @@ const FSSAI = {
    IMAGES
 ======================= */
 const IMG_URL = {
+  // favicon-ish logo
   logo: "/images/bowl1.jpg",
+
+  // hero image on the right
   hero: "/images/monthly-fruit-box-hero.png",
+
+  // FSSAI + logo poster
   fssaiPoster: "/images/healthy-habit-fssai-poster.png",
+
+  // bowls / cards
   bowl1: "/images/colorful-fruit-box-poster.png",
   bowl2: "/images/monthly-fruit-box-hero.png",
   bowl3: "/images/colorful-fruit-box-poster.png",
+
+  // camera roll gallery
   cam1: "/images/colorful-fruit-box-poster.png",
   cam2: "/images/monthly-fruit-box-hero.png",
   cam3: "/images/colorful-fruit-box-poster.png",
@@ -101,34 +111,26 @@ function buildWaLink(phone, text) {
 }
 
 /* =======================
-   ANIMATION VARIANTS
+   ANIMATION HELPERS
 ======================= */
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
 const fadeIn = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { duration: 0.6 } },
+  show: { opacity: 1, transition: { duration: 0.6 } },
 };
 
-const staggerContainer = {
-  hidden: {},
-  visible: {
+const floatLoop = {
+  animate: {
+    y: [0, -12, 0],
     transition: {
-      staggerChildren: 0.12,
+      duration: 5,
+      repeat: Infinity,
+      ease: "easeInOut",
     },
-  },
-};
-
-const cardFadeUp = {
-  hidden: { opacity: 0, y: 24, scale: 0.98 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: "easeOut" },
   },
 };
 
@@ -138,8 +140,11 @@ const cardFadeUp = {
 function FssaiBadge() {
   return (
     <motion.div
-      variants={cardFadeUp}
-      className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+      className="w-full rounded-2xl border border-emerald-200 bg-white/90 shadow-sm p-3 sm:p-4 flex items-center gap-3"
+      variants={fadeIn}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.5 }}
     >
       <img
         src={IMG_URL.fssaiPoster}
@@ -156,12 +161,7 @@ function FssaiBadge() {
           <span className="font-medium tracking-wide">{FSSAI.number}</span>
         </p>
       </div>
-      <motion.svg
-        viewBox="0 0 24 24"
-        className="h-6 w-6 text-emerald-600 shrink-0"
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-      >
+      <svg viewBox="0 0 24 24" className="h-6 w-6 text-emerald-600 shrink-0">
         <path
           fill="currentColor"
           d="M12 2l7 3v6c0 5-3.5 9.5-7 11c-3.5-1.5-7-6-7-11V5l7-3z"
@@ -170,7 +170,7 @@ function FssaiBadge() {
           fill="#ffffff"
           d="M10.5 13.2l-2-2 1.1-1.1 0.9 0.9 3.9-3.9 1.1 1.1z"
         />
-      </motion.svg>
+      </svg>
     </motion.div>
   );
 }
@@ -227,19 +227,7 @@ export default function HealthyHabitSite() {
       (notes ? `Notes: ${notes}%0A` : "") +
       `%0A(Website enquiry)`;
     return `https://wa.me/${BUSINESS.whatsappOwner}?text=${msg}`;
-  }, [
-    name,
-    phone,
-    email,
-    selectedProduct,
-    qty,
-    date,
-    time,
-    city,
-    pincode,
-    address,
-    notes,
-  ]);
+  }, [name, phone, email, selectedProduct, qty, date, time, city, pincode, address, notes]);
 
   // validation
   function validate() {
@@ -296,7 +284,7 @@ export default function HealthyHabitSite() {
             city,
             pincode,
             address,
-            variant: selectedProduct.name,
+            variant: selectedProduct?.name || "Fruit Bowl",
             qty,
             date,
             time,
@@ -318,14 +306,14 @@ export default function HealthyHabitSite() {
         amount: order.amount,
         currency: order.currency,
         name: BUSINESS.name,
-        description: `${selectedProduct.name} x ${qty}`,
+        description: `${selectedProduct?.name || "Fruit Bowl"} x ${qty}`,
         order_id: order.id,
         prefill: { name, email, contact: phone },
         notes: {
           city,
           pincode,
           address,
-          variant: selectedProduct.name,
+          variant: selectedProduct?.name || "Fruit Bowl",
           qty,
           date,
           time,
@@ -344,7 +332,7 @@ export default function HealthyHabitSite() {
             city,
             pincode,
             address,
-            variant: selectedProduct.name,
+            variant: selectedProduct?.name || "Fruit Bowl",
             qty,
             date,
             time,
@@ -402,15 +390,36 @@ export default function HealthyHabitSite() {
 
   /* ========= RENDER ========= */
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800">
+    <div className="relative min-h-screen bg-gradient-to-b from-emerald-50 via-white to-orange-50 text-slate-800 overflow-hidden">
+      {/* Floating fruit icons in background */}
+      <motion.span
+        className="hidden md:block absolute -right-6 top-32 text-5xl"
+        {...floatLoop}
+      >
+        🍊
+      </motion.span>
+      <motion.span
+        className="hidden md:block absolute left-6 bottom-40 text-4xl"
+        {...floatLoop}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      >
+        🍓
+      </motion.span>
+
       {/* Header */}
       <header className="backdrop-blur supports-[backdrop-filter]:bg-white/60 bg-white/50 sticky top-0 z-50 border-b border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img
+          <motion.div
+            className="flex items-center gap-3"
+            variants={fadeIn}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.img
               src={IMG_URL.logo}
               alt={BUSINESS.name}
               className="h-10 w-10 rounded-full shadow"
+              {...floatLoop}
             />
             <div className="leading-tight">
               <p className="font-semibold text-emerald-700 text-lg">
@@ -418,7 +427,7 @@ export default function HealthyHabitSite() {
               </p>
               <p className="text-xs text-emerald-600">One Box • Many Benefits</p>
             </div>
-          </div>
+          </motion.div>
           <nav className="hidden md:flex items-center gap-6 text-sm">
             <a href="#menu" className="hover:text-emerald-700">
               Menu
@@ -442,7 +451,7 @@ export default function HealthyHabitSite() {
           <div className="flex gap-2">
             <a
               href="#book"
-              className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
+              className="hidden md:inline-block px-4 py-2 rounded-2xl shadow bg-emerald-600 text-white hover:bg-emerald-700"
             >
               Book now
             </a>
@@ -450,7 +459,7 @@ export default function HealthyHabitSite() {
               href={`https://wa.me/${BUSINESS.whatsappOwner}`}
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 transform hover:-translate-y-0.5 transition-all duration-300"
+              className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
             >
               WhatsApp
             </a>
@@ -471,15 +480,16 @@ export default function HealthyHabitSite() {
       </header>
 
       {/* Hero */}
-      <motion.section
+      <section
+        className="max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
         id="home"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        className="relative max-w-6xl mx-auto px-4 pt-10 pb-8 grid md:grid-cols-2 gap-8 items-center"
       >
-        <motion.div variants={fadeUp}>
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.5 }}
+        >
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-emerald-800">
             Fresh Fruit Bowls, delivered with love
           </h1>
@@ -491,13 +501,13 @@ export default function HealthyHabitSite() {
           <div className="mt-6 flex flex-wrap gap-3">
             <a
               href="#book"
-              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+              className="px-5 py-3 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
             >
               Book your bowl
             </a>
             <a
               href="#menu"
-              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 bg-white/40 hover:bg-emerald-50 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
+              className="px-5 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
             >
               View menu
             </a>
@@ -515,86 +525,45 @@ export default function HealthyHabitSite() {
             </span>
           </div>
         </motion.div>
-
         <motion.div
-          variants={fadeIn}
-          className="relative flex items-center justify-center"
+          className="relative"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.4 }}
         >
-          {/* soft glow behind hero */}
-          <div
-            aria-hidden="true"
-            className="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-emerald-200/70 via-emerald-50 to-orange-100/80 blur-2xl opacity-80 animate-pulse"
-          />
           <motion.img
             src={IMG_URL.hero}
             alt="Monthly Fruit Box"
-            className="relative w-full rounded-3xl shadow-xl"
-            whileHover={{ y: -6, scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            className="w-full rounded-3xl shadow-xl"
+            whileHover={{ scale: 1.02, rotate: -1 }}
+            transition={{ type: "spring", stiffness: 120 }}
           />
-          {/* floating fruit emojis on desktop */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none hidden md:block"
-          >
-            <motion.span
-              className="absolute -top-5 left-3 text-3xl"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            >
-              🍊
-            </motion.span>
-            <motion.span
-              className="absolute -bottom-4 right-6 text-3xl"
-              animate={{ y: [0, 8, 0] }}
-              transition={{
-                repeat: Infinity,
-                duration: 3.2,
-                ease: "easeInOut",
-                delay: 0.4,
-              }}
-            >
-              🍓
-            </motion.span>
-            <motion.span
-              className="absolute top-6 -right-4 text-2xl text-emerald-500/80"
-              animate={{ y: [0, -6, 0], scale: [1, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 3.4, ease: "easeInOut" }}
-            >
-              🥝
-            </motion.span>
-          </div>
         </motion.div>
-      </motion.section>
+      </section>
 
       {/* Our Bowls / Menu */}
-      <motion.section
-        id="menu"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.25 }}
-        className="max-w-6xl mx-auto px-4 py-10"
-      >
-        <motion.div
-          variants={fadeUp}
-          className="flex items-end justify-between gap-4"
-        >
+      <section id="menu" className="max-w-6xl mx-auto px-4 py-10">
+        <div className="flex items-end justify-between gap-4">
           <h2 className="text-3xl font-bold text-emerald-800">Our Bowls</h2>
           <a
             href="#book"
-            className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
+            className="px-4 py-2 rounded-2xl bg-emerald-600 text-white shadow hover:bg-emerald-700"
           >
             Quick order
           </a>
-        </motion.div>
+        </div>
         <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PRODUCTS.map((p) => (
+          {PRODUCTS.map((p, index) => (
             <motion.article
               key={p.sku}
-              variants={cardFadeUp}
-              whileHover={{ y: -6, boxShadow: "0 18px 40px rgba(15,118,110,0.18)" }}
-              className="rounded-3xl bg-white shadow-md p-4 flex flex-col transition-all duration-300"
+              className="rounded-3xl bg-white shadow hover:shadow-lg transition p-4 flex flex-col"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.1 * index }}
+              whileHover={{ y: -6, scale: 1.02 }}
             >
               <img
                 src={p.image}
@@ -619,7 +588,7 @@ export default function HealthyHabitSite() {
                 <p className="text-lg font-bold">₹{p.price}</p>
                 <a
                   href="#book"
-                  className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
+                  className="px-4 py-2 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
                 >
                   Book
                 </a>
@@ -627,42 +596,38 @@ export default function HealthyHabitSite() {
             </motion.article>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {/* Why Us */}
-      <motion.section
-        id="why-us"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="bg-white/60 border-y border-emerald-100"
-      >
+      <section id="why-us" className="bg-white/60 border-y border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-3 gap-8">
           {[
             {
+              emoji: "🥝",
               t: "Squeaky clean",
               d: "RO-washed fruits, food-grade gloves & sanitized prep surfaces.",
-              icon: "🧼",
             },
             {
+              emoji: "🍉",
               t: "Always fresh",
               d: "We cut close to delivery time so your bowl stays crisp & juicy.",
-              icon: "🍉",
             },
             {
+              emoji: "📦",
               t: "Flexible plans",
               d: "Book once, schedule daily, or choose a monthly subscription box.",
-              icon: "📆",
             },
-          ].map((f) => (
+          ].map((f, i) => (
             <motion.div
               key={f.t}
-              variants={cardFadeUp}
-              whileHover={{ y: -6, boxShadow: "0 16px 35px rgba(15,118,110,0.15)" }}
-              className="rounded-3xl bg-white p-6 shadow-md transition-all duration-300"
+              className="rounded-3xl bg-white p-6 shadow"
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ delay: 0.1 * i }}
             >
-              <p className="text-2xl">{f.icon}</p>
+              <p className="text-2xl">{f.emoji}</p>
               <h3 className="mt-2 text-xl font-semibold text-emerald-800">
                 {f.t}
               </h3>
@@ -670,32 +635,27 @@ export default function HealthyHabitSite() {
             </motion.div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {/* Pricing */}
-      <motion.section
-        id="pricing"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="max-w-6xl mx-auto px-4 py-12"
-      >
-        <motion.h2 variants={fadeUp} className="text-3xl font-bold text-emerald-800">
-          Simple pricing
-        </motion.h2>
-        <motion.p variants={fadeUp} className="text-slate-600 mt-1">
+      <section id="pricing" className="max-w-6xl mx-auto px-4 py-12">
+        <h2 className="text-3xl font-bold text-emerald-800">Simple pricing</h2>
+        <p className="text-slate-600 mt-1">
           Bulk / office / party orders available on request.
-        </motion.p>
+        </p>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {[...PRODUCTS].map((p, i) => (
             <motion.div
               key={p.sku}
-              variants={cardFadeUp}
-              whileHover={{ y: -6, boxShadow: "0 18px 40px rgba(15,118,110,0.16)" }}
-              className={`rounded-3xl p-6 shadow-md bg-white transition-all duration-300 ${
+              className={`rounded-3xl p-6 shadow bg-white ${
                 i === 1 ? "ring-2 ring-emerald-500" : ""
               }`}
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ delay: 0.1 * i }}
+              whileHover={{ y: -4 }}
             >
               <h3 className="text-xl font-semibold text-emerald-800">
                 {p.name}
@@ -715,33 +675,36 @@ export default function HealthyHabitSite() {
               </ul>
               <a
                 href="#book"
-                className="mt-5 inline-block w-full text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 transform hover:-translate-y-0.5 transition-all duration-300"
+                className="mt-5 inline-block w-full text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
               >
                 Book {p.name}
               </a>
             </motion.div>
           ))}
         </div>
-      </motion.section>
+      </section>
 
       {/* Food safety + FSSAI section */}
-      <motion.section
+      <section
         id="food-safety"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
         className="bg-emerald-50/70 border-y border-emerald-100"
       >
         <div className="max-w-6xl mx-auto px-4 py-10 grid md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-8 items-center">
-          <motion.div variants={fadeUp}>
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
+          >
             <h2 className="text-3xl font-bold text-emerald-800">
               Food safety first, always
             </h2>
             <p className="mt-2 text-sm md:text-base text-slate-700">
               {BUSINESS.name} is licensed with the{" "}
-              <strong>Food Safety and Standards Authority of India (FSSAI)</strong>.
-              We follow strict guidelines on hygiene, sourcing, storage and
+              <strong>
+                Food Safety and Standards Authority of India (FSSAI)
+              </strong>
+              . We follow strict guidelines on hygiene, sourcing, storage and
               preparation for every single fruit box.
             </p>
             <ul className="mt-4 space-y-2 text-sm text-slate-700 list-disc list-inside">
@@ -755,32 +718,26 @@ export default function HealthyHabitSite() {
             </p>
           </motion.div>
           <motion.div
-            variants={cardFadeUp}
             className="flex justify-center"
-            whileHover={{ y: -6, boxShadow: "0 18px 40px rgba(15,118,110,0.25)" }}
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
           >
-            <img
+            <motion.img
               src={IMG_URL.fssaiPoster}
               alt="Healthy Habit FSSAI Licence"
               className="max-h-72 rounded-3xl shadow-lg object-contain bg-white"
+              whileHover={{ scale: 1.03 }}
             />
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Camera roll / Instagram-style gallery */}
-      <motion.section
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="bg-white border-b border-emerald-100"
-      >
+      <section className="bg-white border-b border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-10">
-          <motion.div
-            variants={fadeUp}
-            className="flex flex-col sm:flex-row sm:items-end justify-between gap-3"
-          >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <h2 className="text-2xl font-bold text-emerald-800">
               From our camera roll <span>📸</span>
             </h2>
@@ -788,53 +745,51 @@ export default function HealthyHabitSite() {
               Tag us on Instagram with{" "}
               <span className="font-semibold">#HealthyHabitBowls</span>
             </p>
-          </motion.div>
+          </div>
           <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
             {[IMG_URL.cam1, IMG_URL.cam2, IMG_URL.cam3, IMG_URL.cam4].map(
               (src, i) => (
                 <motion.div
                   key={i}
-                  variants={cardFadeUp}
-                  whileHover={{ y: -4 }}
-                  className="group aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300"
+                  className="aspect-[4/5] rounded-3xl bg-emerald-50 overflow-hidden shadow-sm"
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ delay: 0.05 * i }}
+                  whileHover={{ scale: 1.02 }}
                 >
-                  <motion.img
+                  <img
                     src={src}
                     alt={`Fruit bowl ${i + 1}`}
                     className="w-full h-full object-cover"
-                    whileHover={{ scale: 1.06, rotate: 1.5 }}
-                    transition={{ type: "spring", stiffness: 180, damping: 18 }}
                   />
                 </motion.div>
               )
             )}
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Booking */}
-      <motion.section
+      <section
         id="book"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
         className="bg-emerald-50/60 border-t border-emerald-100"
       >
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl font-bold text-emerald-800"
-          >
+          <h2 className="text-3xl font-bold text-emerald-800">
             Book your fruit bowl
-          </motion.h2>
-          <motion.p variants={fadeUp} className="text-slate-600 mt-1">
+          </h2>
+          <p className="text-slate-600 mt-1">
             We’ll confirm on WhatsApp within minutes.
-          </motion.p>
+          </p>
 
           <motion.div
-            variants={cardFadeUp}
-            className="mt-6 rounded-3xl bg-white shadow-md hover:shadow-xl transition-shadow duration-300 p-6 grid md:grid-cols-2 gap-5"
+            className="mt-6 rounded-3xl bg-white shadow p-6 grid md:grid-cols-2 gap-5"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
           >
             <div className="space-y-4">
               <label className="block">
@@ -842,7 +797,7 @@ export default function HealthyHabitSite() {
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                   placeholder="e.g., Priya"
                 />
                 <Error id="name" />
@@ -853,7 +808,7 @@ export default function HealthyHabitSite() {
                 <input
                   value={phone}
                   onChange={(e) => setPhone(onlyDigits(e.target.value))}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                   placeholder="98XXXXXXXX"
                   maxLength={10}
                 />
@@ -865,7 +820,7 @@ export default function HealthyHabitSite() {
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                   placeholder="you@example.com"
                 />
                 <Error id="email" />
@@ -876,7 +831,7 @@ export default function HealthyHabitSite() {
                 <select
                   value={variant}
                   onChange={(e) => setVariant(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                 >
                   {PRODUCTS.map((p) => (
                     <option value={p.sku} key={p.sku}>
@@ -895,7 +850,7 @@ export default function HealthyHabitSite() {
                   onChange={(e) =>
                     setQty(Math.max(1, Number(e.target.value) || 1))
                   }
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                 />
                 <Error id="qty" />
               </label>
@@ -908,7 +863,7 @@ export default function HealthyHabitSite() {
                   <input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
-                    className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                    className="mt-1 w-full border rounded-xl px-3 py-2"
                     placeholder={BUSINESS.serviceCity}
                   />
                   <Error id="city" />
@@ -918,7 +873,7 @@ export default function HealthyHabitSite() {
                   <input
                     value={pincode}
                     onChange={(e) => setPincode(onlyDigits(e.target.value))}
-                    className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                    className="mt-1 w-full border rounded-xl px-3 py-2"
                     placeholder="6-digit"
                     maxLength={6}
                   />
@@ -932,7 +887,7 @@ export default function HealthyHabitSite() {
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                 />
                 <Error id="date" />
               </label>
@@ -943,7 +898,7 @@ export default function HealthyHabitSite() {
                   type="time"
                   value={time}
                   onChange={(e) => setTime(e.target.value)}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                 />
                 <Error id="time" />
               </label>
@@ -956,7 +911,7 @@ export default function HealthyHabitSite() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   rows={3}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                   placeholder="Flat / Street / Landmark"
                 />
                 <Error id="address" />
@@ -968,7 +923,7 @@ export default function HealthyHabitSite() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={2}
-                  className="mt-1 w-full border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500/60"
+                  className="mt-1 w-full border rounded-xl px-3 py-2"
                   placeholder="Allergies, no pineapple, extra pomegranate, etc."
                 />
               </label>
@@ -989,7 +944,7 @@ export default function HealthyHabitSite() {
                   href={enquiryLink}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+                  className="text-center px-4 py-3 rounded-2xl bg-emerald-600 text-white hover:bg-emerald-700"
                 >
                   WhatsApp
                 </a>
@@ -997,21 +952,21 @@ export default function HealthyHabitSite() {
                   href={`mailto:${"orders@healthyhabit.example"}?subject=${encodeURIComponent(
                     "Fruit Bowl Booking"
                   )}&body=${encodeURIComponent(
-                    `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nVariant: ${
+                    `Name: ${name}\nPhone: ${phone}\nEmail: ${
+                      email
+                    }\nVariant: ${
                       selectedProduct?.name || ""
                     }\nQty: ${qty}\nDate: ${date} ${time}\nCity: ${city}\nPincode: ${pincode}\nAddress: ${address}\nNotes: ${notes}\nTotal: ₹${total}`
                   )}`}
-                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
+                  className="text-center px-4 py-3 rounded-2xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50"
                 >
                   Email
                 </a>
                 <button
                   onClick={handlePayOnline}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-2xl text-white shadow-md transform transition-all duration-300 ${
-                    isSubmitting
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-black hover:opacity-95 hover:-translate-y-0.5 hover:shadow-xl"
+                  className={`px-4 py-3 rounded-2xl text-white ${
+                    isSubmitting ? "bg-gray-400" : "bg-black hover:opacity-95"
                   }`}
                 >
                   {isSubmitting ? "Processing..." : "Pay Online"}
@@ -1020,19 +975,17 @@ export default function HealthyHabitSite() {
             </div>
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Corporate orders */}
-      <motion.section
-        id="corporate"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="bg-white border-t border-emerald-100"
-      >
+      <section id="corporate" className="bg-white border-t border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8 items-start">
-          <motion.div variants={fadeUp}>
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
+          >
             <h2 className="text-3xl font-bold text-emerald-800">
               Corporate orders for offices
             </h2>
@@ -1049,9 +1002,11 @@ export default function HealthyHabitSite() {
             </ul>
           </motion.div>
           <motion.div
-            variants={cardFadeUp}
-            whileHover={{ y: -6, boxShadow: "0 18px 40px rgba(15,118,110,0.18)" }}
-            className="rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4 shadow-md transition-all duration-300"
+            className="rounded-3xl bg-emerald-50/70 border border-emerald-100 p-5 space-y-4"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.4 }}
           >
             <p className="text-sm text-slate-700">
               Share a few details and we’ll respond with a quote & menu options
@@ -1070,7 +1025,7 @@ export default function HealthyHabitSite() {
             <div className="flex flex-wrap gap-3">
               <a
                 href="mailto:orders@healthyhabit.example?subject=Corporate%20fruit%20box%20enquiry"
-                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white text-sm shadow hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+                className="px-4 py-2 rounded-2xl bg-emerald-600 text-white text-sm"
               >
                 Mail us your requirement
               </a>
@@ -1080,31 +1035,21 @@ export default function HealthyHabitSite() {
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 text-sm hover:bg-emerald-50 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-300"
+                className="px-4 py-2 rounded-2xl border border-emerald-600 text-emerald-700 text-sm"
               >
                 WhatsApp us
               </a>
             </div>
           </motion.div>
         </div>
-      </motion.section>
+      </section>
 
       {/* FAQ (simple) */}
-      <motion.section
-        id="faq"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        className="bg-white/60 border-y border-emerald-100"
-      >
+      <section id="faq" className="bg-white/60 border-y border-emerald-100">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          <motion.h2
-            variants={fadeUp}
-            className="text-3xl font-bold text-emerald-800"
-          >
+          <h2 className="text-3xl font-bold text-emerald-800">
             Frequently asked questions
-          </motion.h2>
+          </h2>
           <div className="mt-6 grid md:grid-cols-2 gap-6">
             {[
               {
@@ -1123,11 +1068,15 @@ export default function HealthyHabitSite() {
                 q: "Can I customize my bowl?",
                 a: "Yes! Mention allergies or dislikes in notes. We’ll confirm substitutions when possible.",
               },
-            ].map((f) => (
+            ].map((f, i) => (
               <motion.details
                 key={f.q}
-                variants={cardFadeUp}
-                className="rounded-2xl bg-white shadow-md hover:shadow-lg transition-shadow duration-300 p-5"
+                className="rounded-2xl bg-white shadow p-5"
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ delay: 0.05 * i }}
               >
                 <summary className="font-semibold cursor-pointer text-emerald-800">
                   {f.q}
@@ -1137,16 +1086,16 @@ export default function HealthyHabitSite() {
             ))}
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* Confirmation Modal */}
       {receipt && (
         <div className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4">
           <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
             className="max-w-lg w-full bg-white rounded-3xl shadow-xl p-6"
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
           >
             <h3 className="text-xl font-bold text-emerald-800">
               Payment successful 🎉
